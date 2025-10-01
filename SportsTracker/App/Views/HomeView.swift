@@ -17,18 +17,9 @@ struct HomeView: View {
                             .padding(.horizontal, Theme.Spacing.md)
                         }
                         
-                        // Привітання
-                        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                            Text(viewStore.welcomeMessage)
-                                .font(Theme.Typography.largeTitle)
-                                .foregroundColor(Theme.Palette.text)
-                            
-                            Text("Відстежуйте свої спортивні досягнення")
-                                .font(Theme.Typography.body)
-                                .foregroundColor(Theme.Palette.textSecondary)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, Theme.Spacing.md)
+                        // Статистика місяця
+                        MonthlyStatsView(days: viewStore.recentDays)
+                            .padding(.horizontal, Theme.Spacing.md)
                         
                         // Швидкі дії
                         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
@@ -305,5 +296,70 @@ struct DayRow: View {
         .shadow(color: Theme.Palette.darkTeal.opacity(0.1), radius: 2, x: 0, y: 1)
         }
         .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - Monthly Stats View
+
+struct MonthlyStatsView: View {
+    let days: [Day]
+    
+    private var monthlyDuration: TimeInterval {
+        let calendar = Calendar.current
+        let now = Date()
+        
+        // Отримуємо початок поточного місяця
+        let startOfMonth = calendar.dateInterval(of: .month, for: now)?.start ?? now
+        
+        // Фільтруємо тренування поточного місяця
+        let currentMonthDays = days.filter { day in
+            day.date >= startOfMonth
+        }
+        
+        print("📊 MonthlyStatsView: Знайдено \(currentMonthDays.count) тренувань в поточному місяці")
+        for day in currentMonthDays {
+            print("   - \(day.sportType.rawValue): \(day.duration) секунд")
+        }
+        
+        // Сумуємо тривалість
+        let totalDuration = currentMonthDays.reduce(0) { $0 + $1.duration }
+        print("📊 MonthlyStatsView: Загальна тривалість: \(totalDuration) секунд")
+        return totalDuration
+    }
+    
+    private var formattedDuration: String {
+        let totalSeconds = Int(monthlyDuration.rounded())
+        let hours = totalSeconds / 3600
+        let minutes = (totalSeconds % 3600) / 60
+        let seconds = totalSeconds % 60
+        
+        print("📊 MonthlyStatsView: Форматування - totalSeconds: \(totalSeconds), hours: \(hours), minutes: \(minutes), seconds: \(seconds)")
+        
+        if hours > 0 {
+            return "\(hours)г:\(String(format: "%02d", minutes))хв:\(String(format: "%02d", seconds))с"
+        } else if minutes > 0 {
+            return "\(minutes)хв:\(String(format: "%02d", seconds))с"
+        } else {
+            return "\(seconds)с"
+        }
+    }
+    
+    var body: some View {
+        VStack(spacing: Theme.Spacing.xs) {
+            Text("В цьому місяці")
+                .font(Theme.Typography.body)
+                .foregroundColor(Theme.Palette.textSecondary)
+            
+            Text(formattedDuration)
+                .font(.system(size: 32, weight: .bold, design: .rounded))
+                .foregroundColor(Theme.Palette.primary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, Theme.Spacing.lg)
+        .background(
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
+                .fill(Theme.Gradients.card)
+        )
+        .shadow(color: Theme.Palette.darkTeal.opacity(0.1), radius: 2, x: 0, y: 1)
     }
 }

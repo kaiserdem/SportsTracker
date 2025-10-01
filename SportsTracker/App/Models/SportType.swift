@@ -34,6 +34,16 @@ enum SportType: String, CaseIterable, Identifiable, Codable {
         }
     }
     
+    // Визначає чи спорт має кроки
+    var hasSteps: Bool {
+        switch self {
+        case .running, .walking, .hiking:
+            return true
+        case .cycling, .swimming, .skiing, .snowboarding, .gym, .yoga, .pilates, .crossfit, .boxing, .tennis, .football, .basketball, .volleyball, .climbing, .dancing, .martialArts, .other:
+            return false
+        }
+    }
+    
     var icon: String {
         switch self {
         case .running:

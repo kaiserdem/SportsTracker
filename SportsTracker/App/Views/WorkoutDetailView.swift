@@ -66,7 +66,7 @@ struct WorkoutDetailView: View {
                                     .foregroundColor(Theme.Palette.text)
                                 
                                 VStack(spacing: Theme.Spacing.sm) {
-                                    if let steps = workout.steps {
+                                    if let steps = workout.steps, !workout.sportType.hasSteps {
                                         DetailRow(
                                             title: "Кроки",
                                             value: "\(steps)",
@@ -349,14 +349,16 @@ struct EditWorkoutView: View {
                                 .keyboardType(.numberPad)
                         }
                         
-                        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                            Text("Кроки")
-                                .font(Theme.Typography.headline)
-                                .foregroundColor(Theme.Palette.text)
-                            
-                            TextField("0", text: $steps)
-                                .textFieldStyle(.roundedBorder)
-                                .keyboardType(.numberPad)
+                        if workout.sportType.hasSteps {
+                            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                                Text("Кроки")
+                                    .font(Theme.Typography.headline)
+                                    .foregroundColor(Theme.Palette.text)
+                                
+                                TextField("0", text: $steps)
+                                    .textFieldStyle(.roundedBorder)
+                                    .keyboardType(.numberPad)
+                            }
                         }
                     }
                 }
@@ -451,8 +453,8 @@ struct CustomBackButton: View {
 // MARK: - Helper Functions
 
 private func formatDistance(_ workout: Day) -> String {
-    // Приблизний розрахунок дистанції на основі кроків
-    if let steps = workout.steps {
+    // Приблизний розрахунок дистанції на основі кроків (тільки для спорту з кроками)
+    if let steps = workout.steps, workout.sportType.hasSteps {
         let distance = Double(steps) * 0.0008 // Приблизно 0.8м на крок
         if distance >= 1000 {
             return String(format: "%.2f км", distance / 1000)
