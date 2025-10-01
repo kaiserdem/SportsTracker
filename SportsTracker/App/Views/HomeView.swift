@@ -17,9 +17,17 @@ struct HomeView: View {
                             .padding(.horizontal, Theme.Spacing.md)
                         }
                         
-                        // Статистика місяця
-                        MonthlyStatsView(days: viewStore.recentDays)
-                            .padding(.horizontal, Theme.Spacing.md)
+                        // Статистика місяця та календар
+                        HStack(spacing: Theme.Spacing.md) {
+                            // Статистика місяця
+                            MonthlyStatsView(days: viewStore.recentDays)
+                                .frame(maxWidth: .infinity)
+                            
+                            // Календар
+                            MonthlyCalendarView(days: viewStore.recentDays)
+                                .frame(maxWidth: .infinity)
+                        }
+                        .padding(.horizontal, Theme.Spacing.md)
                         
                         // Швидкі дії
                         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
@@ -356,6 +364,125 @@ struct MonthlyStatsView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, Theme.Spacing.lg)
+        .background(
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
+                .fill(Theme.Gradients.card)
+        )
+        .shadow(color: Theme.Palette.darkTeal.opacity(0.1), radius: 2, x: 0, y: 1)
+    }
+}
+
+// MARK: - Monthly Calendar View
+
+struct MonthlyCalendarView: View {
+    let days: [Day]
+    
+    private var calendar: Calendar {
+        Calendar.current
+    }
+    
+    private var currentDate: Date {
+        Date()
+    }
+    
+    private var currentMonth: Int {
+        calendar.component(.month, from: currentDate)
+    }
+    
+    private var currentYear: Int {
+        calendar.component(.year, from: currentDate)
+    }
+    
+    private var currentDay: Int {
+        calendar.component(.day, from: currentDate)
+    }
+    
+    private var daysInMonth: Int {
+        calendar.range(of: .day, in: .month, for: currentDate)?.count ?? 30
+    }
+    
+    private var firstDayOfMonth: Date {
+        calendar.date(from: DateComponents(year: currentYear, month: currentMonth, day: 1)) ?? currentDate
+    }
+    
+    private var firstWeekday: Int {
+        let weekday = calendar.component(.weekday, from: firstDayOfMonth)
+        // В iOS Calendar: Неділя = 1, Понеділок = 2, ..., Субота = 7
+        // Нам потрібно: Понеділок = 0, Вівторок = 1, ..., Неділя = 6
+        return (weekday + 5) % 7
+    }
+    
+    private func hasWorkoutOnDay(_ day: Int) -> Bool {
+        let targetDate = calendar.date(from: DateComponents(year: currentYear, month: currentMonth, day: day)) ?? currentDate
+        let hasWorkout = days.contains { day in
+            calendar.isDate(day.date, inSameDayAs: targetDate)
+        }
+        return hasWorkout
+    }
+    
+    var body: some View {
+        VStack(spacing: Theme.Spacing.sm) {
+            // Заголовок календаря
+            HStack {
+                Text("Календар")
+                    .font(Theme.Typography.body)
+                    .foregroundColor(Theme.Palette.textSecondary)
+                
+                Spacer()
+                
+                Text("\(currentMonth)/\(currentYear)")
+                    .font(Theme.Typography.caption)
+                    .foregroundColor(Theme.Palette.textSecondary)
+            }
+            
+            // Дні тижня
+            HStack(spacing: 2) {
+                ForEach(["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"], id: \.self) { day in
+                    Text(day)
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(Theme.Palette.textSecondary)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+            
+            // Діагностична інформація
+            let _ = print("📅 Календар: Сьогодні: \(currentDate)")
+            let _ = print("📅 Календар: Поточний день: \(currentDay)")
+            let _ = print("📅 Календар: Перший день місяця: \(firstDayOfMonth)")
+            let _ = print("📅 Календар: День тижня першого дня: \(calendar.component(.weekday, from: firstDayOfMonth))")
+            let _ = print("📅 Календар: Відрегульований день: \(firstWeekday)")
+            
+            // Календарна сітка
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 2), count: 7), spacing: 2) {
+                // Порожні клітинки для першого дня місяця
+                ForEach(0..<firstWeekday, id: \.self) { _ in
+                    Rectangle()
+                        .fill(Color.clear)
+                        .frame(height: 24)
+                }
+                
+                // Дні місяця
+                ForEach(1...daysInMonth, id: \.self) { day in
+                    let hasWorkout = hasWorkoutOnDay(day)
+                    let isToday = day == currentDay
+                    
+                    Text("\(day)")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor((isToday || hasWorkout) ? .white : Theme.Palette.text)
+                        .frame(width: 24, height: 24)
+                        .background(
+                            Circle()
+                                .fill(hasWorkout ? Theme.Palette.primary : (isToday ? .green : Color.clear))
+                        )
+                        .overlay(
+                            Circle()
+                                .stroke(hasWorkout ? Theme.Palette.primary : (isToday ? .green : Color.clear), lineWidth: 1)
+                        )
+                }
+            }
+        }
+        .padding(.vertical, Theme.Spacing.lg)
+        .padding(.horizontal, Theme.Spacing.md)
         .background(
             RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
                 .fill(Theme.Gradients.card)
