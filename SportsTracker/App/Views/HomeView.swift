@@ -414,8 +414,8 @@ struct MonthlyCalendarView: View {
     
     private func hasWorkoutOnDay(_ day: Int) -> Bool {
         let targetDate = calendar.date(from: DateComponents(year: currentYear, month: currentMonth, day: day)) ?? currentDate
-        let hasWorkout = days.contains { day in
-            calendar.isDate(day.date, inSameDayAs: targetDate)
+        let hasWorkout = days.contains { workoutDay in
+            calendar.isDate(workoutDay.date, inSameDayAs: targetDate)
         }
         return hasWorkout
     }
@@ -446,25 +446,36 @@ struct MonthlyCalendarView: View {
             }
             
             // Діагностична інформація
+            let _ = print("📅 Календар: === ПОТОЧНА ДАТА ===")
             let _ = print("📅 Календар: Сьогодні: \(currentDate)")
             let _ = print("📅 Календар: Поточний день: \(currentDay)")
+            let _ = print("📅 Календар: Поточний місяць: \(currentMonth)")
+            let _ = print("📅 Календар: Поточний рік: \(currentYear)")
             let _ = print("📅 Календар: Перший день місяця: \(firstDayOfMonth)")
             let _ = print("📅 Календар: День тижня першого дня: \(calendar.component(.weekday, from: firstDayOfMonth))")
             let _ = print("📅 Календар: Відрегульований день: \(firstWeekday)")
+            let _ = print("📅 Календар: Кількість днів у місяці: \(daysInMonth)")
+            let _ = print("📅 Календар: ======================")
             
             // Календарна сітка
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 2), count: 7), spacing: 2) {
                 // Порожні клітинки для першого дня місяця
-                ForEach(0..<firstWeekday, id: \.self) { _ in
+                ForEach(0..<firstWeekday, id: \.self) { index in
                     Rectangle()
                         .fill(Color.clear)
                         .frame(height: 24)
+                        .id("empty-\(index)")
                 }
                 
                 // Дні місяця
                 ForEach(1...daysInMonth, id: \.self) { day in
                     let hasWorkout = hasWorkoutOnDay(day)
                     let isToday = day == currentDay
+                    
+                    // Діагностика для сьогоднішнього дня
+                    if isToday {
+                        let _ = print("📅 Календар: СЬОГОДНІШНІЙ ДЕНЬ: \(day) (isToday: \(isToday), hasWorkout: \(hasWorkout))")
+                    }
                     
                     Text("\(day)")
                         .font(.system(size: 12, weight: .medium))
@@ -478,6 +489,7 @@ struct MonthlyCalendarView: View {
                             Circle()
                                 .stroke(hasWorkout ? Theme.Palette.primary : (isToday ? .green : Color.clear), lineWidth: 1)
                         )
+                        .id("day-\(day)")
                 }
             }
         }
