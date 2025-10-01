@@ -13,6 +13,7 @@ struct StatisticFeature: Reducer {
         case selectPeriod(StatisticPeriod)
         case loadStatistics
         case statisticsLoaded([StatisticData])
+        case coreDataError(CoreDataError)
     }
     
     var body: some Reducer<State, Action> {
@@ -27,12 +28,17 @@ struct StatisticFeature: Reducer {
                 
             case .loadStatistics:
                 state.isLoading = true
-                // Тут буде завантаження статистики
-                return .send(.statisticsLoaded([]))
+                return StatisticsEffects.fetchStatisticsForPeriod(state.selectedPeriod)
+                    .map(Action.statisticsLoaded)
                 
             case let .statisticsLoaded(statistics):
                 state.statistics = statistics
                 state.isLoading = false
+                return .none
+                
+            case let .coreDataError(error):
+                state.isLoading = false
+                print("Core Data Error: \(error)")
                 return .none
             }
         }

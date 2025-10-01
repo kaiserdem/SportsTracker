@@ -107,7 +107,7 @@ struct StatisticView: View {
                     }
                     .padding(.vertical, Theme.Spacing.lg)
                 }
-                .background(Theme.Palette.background)
+                .background(Theme.Gradients.screenBackground)
                 .navigationTitle("Статистика")
                 .navigationBarTitleDisplayMode(.large)
             }
@@ -147,9 +147,9 @@ struct StatisticCard: View {
         }
         .frame(maxWidth: .infinity)
         .padding(Theme.Spacing.md)
-        .background(Theme.Palette.surface)
+        .background(Theme.Gradients.card)
         .cornerRadius(Theme.CornerRadius.medium)
-        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+        .shadow(color: Theme.Palette.darkTeal.opacity(0.1), radius: 2, x: 0, y: 1)
     }
 }
 
@@ -194,9 +194,9 @@ struct StatisticDetailRow: View {
             }
         }
         .padding(Theme.Spacing.md)
-        .background(Theme.Palette.surface)
+        .background(Theme.Gradients.card)
         .cornerRadius(Theme.CornerRadius.medium)
-        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+        .shadow(color: Theme.Palette.darkTeal.opacity(0.1), radius: 2, x: 0, y: 1)
     }
     
     private func iconForActivityType(_ type: SportType) -> String {

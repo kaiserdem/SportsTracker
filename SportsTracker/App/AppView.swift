@@ -62,16 +62,16 @@ struct AppView: View {
                 }
                 .tag(AppFeature.State.Tab.map)
             }
-            .accentColor(Theme.Palette.primary)
+            .accentColor(Theme.Palette.accent)
             .onAppear {
                 let appearance = UITabBarAppearance()
                 appearance.configureWithOpaqueBackground()
                 
                 let gradientLayer = CAGradientLayer()
                 gradientLayer.colors = [
-                    UIColor(Theme.Palette.primary).cgColor,
-                    UIColor(Theme.Palette.accent).cgColor,
-                    UIColor(Theme.Palette.secondary).cgColor
+                    UIColor(Theme.Palette.teal).cgColor,
+                    UIColor(Theme.Palette.deepTeal).cgColor,
+                    UIColor(Theme.Palette.darkTeal).cgColor
                 ]
                 gradientLayer.startPoint = CGPoint(x: 0, y: 0)
                 gradientLayer.endPoint = CGPoint(x: 1, y: 1)
@@ -97,7 +97,7 @@ struct AppView: View {
                 UITabBar.appearance().standardAppearance = appearance
                 UITabBar.appearance().scrollEdgeAppearance = appearance
                 
-                UITabBar.appearance().layer.shadowColor = UIColor.black.cgColor
+                UITabBar.appearance().layer.shadowColor = UIColor(Theme.Palette.darkTeal).cgColor
                 UITabBar.appearance().layer.shadowOffset = CGSize(width: 0, height: -2)
                 UITabBar.appearance().layer.shadowOpacity = 0.3
                 UITabBar.appearance().layer.shadowRadius = 8

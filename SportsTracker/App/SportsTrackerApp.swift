@@ -1,17 +1,18 @@
-//
-//  SportsTrackerApp.swift
-//  SportsTracker
-//
-//  Created by Yaroslav Golinskiy on 01/10/2025.
-//
 
 import SwiftUI
+import CoreData
+import ComposableArchitecture
 
 @main
 struct SportsTrackerApp: App {
+    let persistenceController = PersistenceController.shared
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            AppView(store: Store(initialState: AppFeature.State()) {
+                AppFeature()
+            })
+            .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
 }

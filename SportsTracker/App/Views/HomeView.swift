@@ -36,7 +36,9 @@ struct HomeView: View {
                                     title: "Почати тренування",
                                     icon: "play.circle.fill",
                                     color: Theme.Palette.primary
-                                )
+                                ) {
+                                    viewStore.send(.workout(.showQuickStart))
+                                }
                                 
                                 QuickActionCard(
                                     title: "Додати активність",
@@ -85,12 +87,34 @@ struct HomeView: View {
                     }
                     .padding(.vertical, Theme.Spacing.lg)
                 }
-                .background(Theme.Palette.background)
+                .background(Theme.Gradients.screenBackground)
                 .navigationTitle("Головна")
                 .navigationBarTitleDisplayMode(.large)
             }
             .onAppear {
                 viewStore.send(.onAppear)
+            }
+            .sheet(isPresented: viewStore.binding(
+                get: \.workout.isShowingQuickStart,
+                send: { $0 ? .workout(.showQuickStart) : .workout(.hideQuickStart) }
+            )) {
+                QuickStartView(
+                    store: self.store.scope(
+                        state: \.workout,
+                        action: { .workout($0) }
+                    )
+                )
+            }
+            .fullScreenCover(isPresented: viewStore.binding(
+                get: \.workout.isActive,
+                send: { _ in .workout(.finishWorkout) }
+            )) {
+                ActiveWorkoutView(
+                    store: self.store.scope(
+                        state: \.workout,
+                        action: { .workout($0) }
+                    )
+                )
             }
         }
     }
@@ -100,23 +124,35 @@ struct QuickActionCard: View {
     let title: String
     let icon: String
     let color: Color
+    let action: (() -> Void)?
+    
+    init(title: String, icon: String, color: Color, action: (() -> Void)? = nil) {
+        self.title = title
+        self.icon = icon
+        self.color = color
+        self.action = action
+    }
     
     var body: some View {
-        VStack(spacing: Theme.Spacing.sm) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundColor(color)
-            
-            Text(title)
-                .font(Theme.Typography.caption)
-                .foregroundColor(Theme.Palette.text)
-                .multilineTextAlignment(.center)
+        Button(action: action ?? {}) {
+            VStack(spacing: Theme.Spacing.sm) {
+                Image(systemName: icon)
+                    .font(.title2)
+                    .foregroundColor(color)
+                
+                Text(title)
+                    .font(Theme.Typography.caption)
+                    .foregroundColor(Theme.Palette.text)
+                    .multilineTextAlignment(.center)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(Theme.Spacing.md)
+            .background(Theme.Gradients.card)
+            .cornerRadius(Theme.CornerRadius.medium)
+            .shadow(color: Theme.Palette.darkTeal.opacity(0.1), radius: 2, x: 0, y: 1)
         }
-        .frame(maxWidth: .infinity)
-        .padding(Theme.Spacing.md)
-        .background(Theme.Palette.surface)
-        .cornerRadius(Theme.CornerRadius.medium)
-        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+        .buttonStyle(PlainButtonStyle())
+        .disabled(action == nil)
     }
 }
 
@@ -178,8 +214,8 @@ struct DayRow: View {
             }
         }
         .padding(Theme.Spacing.md)
-        .background(Theme.Palette.surface)
+        .background(Theme.Gradients.card)
         .cornerRadius(Theme.CornerRadius.medium)
-        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+        .shadow(color: Theme.Palette.darkTeal.opacity(0.1), radius: 2, x: 0, y: 1)
     }
 }

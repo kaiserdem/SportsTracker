@@ -1,7 +1,7 @@
 import Foundation
 
 struct Day: Identifiable, Codable, Equatable {
-    let id = UUID()
+    let id: UUID
     let date: Date
     let sportType: SportType
     let comment: String?
@@ -19,6 +19,7 @@ struct Day: Identifiable, Codable, Equatable {
         calories: Int? = nil,
         supplements: [Supplement]? = nil
     ) {
+        self.id = UUID()
         self.date = date
         self.sportType = sportType
         self.comment = comment
@@ -112,12 +113,13 @@ struct Day: Identifiable, Codable, Equatable {
 // MARK: - Supplement Model
 
 struct Supplement: Identifiable, Codable, Equatable {
-    let id = UUID()
+    let id: UUID
     let name: String
     let amount: String
     let time: String // "до тренування", "під час", "після тренування"
     
     init(name: String, amount: String, time: String) {
+        self.id = UUID()
         self.name = name
         self.amount = amount
         self.time = time

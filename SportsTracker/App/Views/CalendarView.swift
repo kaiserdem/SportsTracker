@@ -73,7 +73,7 @@ struct CalendarView: View {
                     
                     Spacer()
                 }
-                .background(Theme.Palette.background)
+                .background(Theme.Gradients.screenBackground)
                 .navigationTitle("Календар")
                 .navigationBarTitleDisplayMode(.large)
             }
@@ -135,9 +135,9 @@ struct EventRow: View {
             }
         }
         .padding(Theme.Spacing.md)
-        .background(Theme.Palette.surface)
+        .background(Theme.Gradients.card)
         .cornerRadius(Theme.CornerRadius.medium)
-        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+        .shadow(color: Theme.Palette.darkTeal.opacity(0.1), radius: 2, x: 0, y: 1)
     }
     
     private func formatTime(_ date: Date) -> String {

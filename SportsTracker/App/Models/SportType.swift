@@ -24,6 +24,16 @@ enum SportType: String, CaseIterable, Identifiable, Codable {
     
     var id: String { rawValue }
     
+    // Визначає чи спорт має дистанцію
+    var hasDistance: Bool {
+        switch self {
+        case .running, .cycling, .swimming, .walking, .hiking, .skiing, .snowboarding:
+            return true
+        case .gym, .yoga, .pilates, .crossfit, .boxing, .tennis, .football, .basketball, .volleyball, .climbing, .dancing, .martialArts, .other:
+            return false
+        }
+    }
+    
     var icon: String {
         switch self {
         case .running:
@@ -137,6 +147,20 @@ enum SportType: String, CaseIterable, Identifiable, Codable {
         case .other:
             return .other
         }
+    }
+}
+
+// MARK: - Extensions
+
+extension SportType {
+    // Види спорту з дистанцією для тренувань
+    static var distanceSports: [SportType] {
+        return SportType.allCases.filter { $0.hasDistance }
+    }
+    
+    // Популярні види спорту з дистанцією
+    static var popularDistanceSports: [SportType] {
+        return [.running, .walking, .cycling, .swimming, .hiking]
     }
 }
 

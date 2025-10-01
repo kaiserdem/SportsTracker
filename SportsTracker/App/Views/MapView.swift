@@ -15,6 +15,11 @@ struct MapView: View {
                         span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
                     )), showsUserLocation: true, userTrackingMode: .none)
                     .ignoresSafeArea()
+                    .overlay(
+                        Theme.Gradients.screenBackground
+                            .opacity(0.3)
+                            .ignoresSafeArea()
+                    )
                     
                     VStack {
                         Spacer()

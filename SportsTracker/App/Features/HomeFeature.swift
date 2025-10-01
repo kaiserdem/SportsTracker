@@ -6,15 +6,25 @@ struct HomeFeature: Reducer {
         var welcomeMessage = "Ласкаво просимо до SportsTracker!"
         var recentDays: [Day] = []
         var isLoading = false
+        var workout = WorkoutFeature.State()
     }
     
     enum Action: Equatable {
         case onAppear
         case loadRecentActivities
         case daysLoaded([Day])
+        case saveDay(Day)
+        case deleteDay(Day)
+        case updateDay(Day)
+        case coreDataError(CoreDataError)
+        case workout(WorkoutFeature.Action)
     }
     
     var body: some Reducer<State, Action> {
+        Scope(state: \.workout, action: /Action.workout) {
+            WorkoutFeature()
+        }
+        
         Reduce { state, action in
             switch action {
             case .onAppear:
@@ -22,12 +32,33 @@ struct HomeFeature: Reducer {
                 
             case .loadRecentActivities:
                 state.isLoading = true
-                // Тут буде завантаження даних
-                return .send(.daysLoaded(Day.createSampleData()))
+                return CoreDataEffects.fetchDays()
+                    .map(Action.daysLoaded)
                 
             case let .daysLoaded(days):
                 state.recentDays = days
                 state.isLoading = false
+                return .none
+                
+            case let .saveDay(day):
+                return CoreDataEffects.saveDay(day)
+                    .map { _ in .loadRecentActivities }
+                
+            case let .deleteDay(day):
+                return CoreDataEffects.deleteDay(day)
+                    .map { _ in .loadRecentActivities }
+                
+            case let .updateDay(day):
+                return CoreDataEffects.updateDay(day)
+                    .map { _ in .loadRecentActivities }
+                
+            case let .coreDataError(error):
+                state.isLoading = false
+                // Тут можна додати обробку помилок
+                print("Core Data Error: \(error)")
+                return .none
+                
+            case .workout:
                 return .none
             }
         }
