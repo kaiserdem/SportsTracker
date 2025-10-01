@@ -33,41 +33,62 @@ struct StatisticView: View {
                                 .font(Theme.Typography.headline)
                                 .foregroundColor(Theme.Palette.text)
                             
-                            LazyVGrid(columns: [
-                                GridItem(.flexible()),
-                                GridItem(.flexible())
-                            ], spacing: Theme.Spacing.md) {
-                                StatisticCard(
-                                    title: "Активність",
-                                    value: "5",
-                                    subtitle: "днів",
-                                    icon: "calendar",
-                                    color: Theme.Palette.primary
-                                )
-                                
-                                StatisticCard(
-                                    title: "Час",
-                                    value: "12:30",
-                                    subtitle: "годин",
-                                    icon: "clock",
-                                    color: Theme.Palette.accent
-                                )
-                                
-                                StatisticCard(
-                                    title: "Дистанція",
-                                    value: "45.2",
-                                    subtitle: "км",
-                                    icon: "location",
-                                    color: Theme.Palette.secondary
-                                )
-                                
-                                StatisticCard(
-                                    title: "Калорії",
-                                    value: "2,340",
-                                    subtitle: "ккал",
-                                    icon: "flame",
-                                    color: Theme.Palette.secondary
-                                )
+                            if viewStore.isLoading {
+                                ProgressView()
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                            } else if viewStore.statistics.isEmpty {
+                                VStack(spacing: Theme.Spacing.sm) {
+                                    Image(systemName: "chart.bar.xaxis")
+                                        .font(.largeTitle)
+                                        .foregroundColor(Theme.Palette.textSecondary)
+                                    
+                                    Text("Немає даних для відображення")
+                                        .font(Theme.Typography.body)
+                                        .foregroundColor(Theme.Palette.textSecondary)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(Theme.Spacing.xl)
+                                .background(Theme.Palette.surface)
+                                .cornerRadius(Theme.CornerRadius.medium)
+                                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                            } else {
+                                LazyVGrid(columns: [
+                                    GridItem(.flexible()),
+                                    GridItem(.flexible())
+                                ], spacing: Theme.Spacing.md) {
+                                    StatisticCard(
+                                        title: "Активність",
+                                        value: "\(viewStore.statistics.count)",
+                                        subtitle: "днів",
+                                        icon: "calendar",
+                                        color: Theme.Palette.primary
+                                    )
+                                    
+                                    StatisticCard(
+                                        title: "Час",
+                                        value: formatTotalDuration(viewStore.statistics),
+                                        subtitle: "годин",
+                                        icon: "clock",
+                                        color: Theme.Palette.accent
+                                    )
+                                    
+                                    StatisticCard(
+                                        title: "Дистанція",
+                                        value: String(format: "%.1f", totalDistance(viewStore.statistics)),
+                                        subtitle: "км",
+                                        icon: "location",
+                                        color: Theme.Palette.secondary
+                                    )
+                                    
+                                    StatisticCard(
+                                        title: "Калорії",
+                                        value: "\(totalCalories(viewStore.statistics))",
+                                        subtitle: "ккал",
+                                        icon: "flame",
+                                        color: Theme.Palette.secondary
+                                    )
+                                }
                             }
                         }
                         .padding(.horizontal, Theme.Spacing.md)
@@ -226,4 +247,21 @@ struct StatisticItem: View {
         }
         .frame(maxWidth: .infinity)
     }
+}
+
+// MARK: - Helper Functions
+
+private func formatTotalDuration(_ statistics: [StatisticData]) -> String {
+    let totalDuration = statistics.reduce(0) { $0 + $1.totalDuration }
+    let hours = Int(totalDuration) / 3600
+    let minutes = Int(totalDuration) % 3600 / 60
+    return String(format: "%d:%02d", hours, minutes)
+}
+
+private func totalDistance(_ statistics: [StatisticData]) -> Double {
+    return statistics.reduce(0) { $0 + $1.totalDistance }
+}
+
+private func totalCalories(_ statistics: [StatisticData]) -> Int {
+    return statistics.reduce(0) { $0 + $1.calories }
 }

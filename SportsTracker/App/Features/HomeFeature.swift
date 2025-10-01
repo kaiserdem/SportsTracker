@@ -18,6 +18,7 @@ struct HomeFeature: Reducer {
         case updateDay(Day)
         case coreDataError(CoreDataError)
         case workout(WorkoutFeature.Action)
+        case showWorkoutDetail(UUID)
     }
     
     var body: some Reducer<State, Action> {
@@ -59,6 +60,11 @@ struct HomeFeature: Reducer {
                 return .none
                 
             case .workout:
+                return .none
+                
+            case let .showWorkoutDetail(workoutId):
+                // Передаємо дію вгору до AppFeature
+                print("📤 HomeFeature: Передаю showWorkoutDetail з ID: \(workoutId)")
                 return .none
             }
         }

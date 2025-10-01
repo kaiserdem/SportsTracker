@@ -67,47 +67,6 @@ struct Day: Identifiable, Codable, Equatable {
     }
     
     // MARK: - Static Methods
-    
-    static func createSampleData() -> [Day] {
-        let calendar = Calendar.current
-        let today = Date()
-        
-        return [
-            Day(
-                date: calendar.date(byAdding: .day, value: -2, to: today) ?? today,
-                sportType: .running,
-                comment: "Ранковий біг у парку. Чудова погода!",
-                duration: 2700, // 45 хвилин
-                steps: 6500,
-                calories: 320,
-                supplements: [
-                    Supplement(name: "Протеїн", amount: "30г", time: "після тренування"),
-                    Supplement(name: "Креатин", amount: "5г", time: "до тренування")
-                ]
-            ),
-            Day(
-                date: calendar.date(byAdding: .day, value: -1, to: today) ?? today,
-                sportType: .gym,
-                comment: "Силове тренування. Фокус на груди та трицепси.",
-                duration: 5400, // 1.5 години
-                steps: 1200,
-                calories: 450,
-                supplements: [
-                    Supplement(name: "BCAA", amount: "10г", time: "під час тренування"),
-                    Supplement(name: "Протеїн", amount: "40г", time: "після тренування")
-                ]
-            ),
-            Day(
-                date: today,
-                sportType: .walking,
-                comment: "Прогулянка з сім'єю",
-                duration: 1800, // 30 хвилин
-                steps: 3500,
-                calories: 150,
-                supplements: nil
-            )
-        ]
-    }
 }
 
 // MARK: - Supplement Model

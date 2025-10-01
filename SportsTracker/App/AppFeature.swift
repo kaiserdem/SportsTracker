@@ -9,6 +9,7 @@ struct AppFeature: Reducer {
         var calendar = CalendarFeature.State()
         var statistic = StatisticFeature.State()
         var map = MapFeature.State()
+        var workoutDetail: WorkoutDetailFeature.State?
     }
 
     enum Action: Equatable {
@@ -17,6 +18,7 @@ struct AppFeature: Reducer {
         case calendar(CalendarFeature.Action)
         case statistic(StatisticFeature.Action)
         case map(MapFeature.Action)
+        case workoutDetail(WorkoutDetailFeature.Action)
         case onAppear
     }
 
@@ -34,19 +36,39 @@ struct AppFeature: Reducer {
             case let .selectTab(tab):
                 state.selectedTab = tab
                 return .none
-         
+                
+            case .home(.showWorkoutDetail(let workoutId)):
+                print("📥 AppFeature: Отримав showWorkoutDetail з HomeFeature з ID: \(workoutId)")
+                if state.workoutDetail == nil {
+                    state.workoutDetail = WorkoutDetailFeature.State(workoutId: workoutId)
+                    print("✅ AppFeature: Створив WorkoutDetailFeature.State")
+                } else {
+                    print("⚠️ AppFeature: WorkoutDetailFeature.State вже існує, ігнорую")
+                }
+                return .none
+                
             case .home:
                 return .none
                 
-                case .calendar:
-                    return .none
+            case .calendar:
+                return .none
                     
-                case .statistic:
-                    return .none
+            case .statistic:
+                return .none
                     
-                case .map:
-                    return .none
+            case .map:
+                return .none
+                
+            case .workoutDetail(.hideActiveWorkout):
+                state.workoutDetail = nil
+                return .none
+                
+            case .workoutDetail:
+                return .none
             }
+        }
+        .ifLet(\.workoutDetail, action: /Action.workoutDetail) {
+            WorkoutDetailFeature()
         }
     }
 }

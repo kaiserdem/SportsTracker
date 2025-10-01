@@ -105,6 +105,26 @@ struct AppView: View {
                 
                 viewStore.send(.onAppear)
             }
+            .sheet(item: viewStore.binding(
+                get: { 
+                    print("🔄 AppView: Перевіряю workoutDetail: \($0.workoutDetail?.id.uuidString ?? "nil")")
+                    return $0.workoutDetail 
+                },
+                send: { _ in 
+                    print("❌ AppView: Закриваю workoutDetail")
+                    return .workoutDetail(.hideActiveWorkout) 
+                }
+            )) { _ in
+                if let workoutDetail = viewStore.workoutDetail {
+                    WorkoutDetailView(
+                        store: Store(
+                            initialState: workoutDetail
+                        ) {
+                            WorkoutDetailFeature()
+                        }
+                    )
+                }
+            }
         }
     }
 }

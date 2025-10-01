@@ -167,12 +167,12 @@ struct ActiveWorkoutView: View {
                     }
                 }
                 .background(Theme.Gradients.screenBackground)
-                .navigationTitle("Тренування")
+                //.navigationTitle("Тренування")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("Закрити") {
-                            viewStore.send(.finishWorkout)
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        CustomBackButton {
+                            viewStore.send(.hideActiveWorkout)
                         }
                     }
                 }
@@ -314,10 +314,3 @@ struct SummaryRow: View {
     }
 }
 
-#Preview {
-    ActiveWorkoutView(
-        store: Store(initialState: WorkoutFeature.State()) {
-            WorkoutFeature()
-        }
-    )
-}

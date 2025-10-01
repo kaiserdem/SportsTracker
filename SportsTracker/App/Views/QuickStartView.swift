@@ -44,13 +44,7 @@ struct QuickStartView: View {
                 .background(Theme.Gradients.screenBackground)
                 .navigationTitle("Швидкий старт")
                 .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("Скасувати") {
-                            viewStore.send(.hideQuickStart)
-                        }
-                    }
-                }
+                
             }
             .onAppear {
                 viewStore.send(.showQuickStart)

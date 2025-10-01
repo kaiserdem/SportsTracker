@@ -33,25 +33,6 @@ struct PersistenceController {
     
     static var preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
-        let viewContext = result.container.viewContext
-        
-        // Створюємо тестові дані для превью
-        let sampleDay = DayEntity(context: viewContext)
-        sampleDay.id = UUID()
-        sampleDay.date = Date()
-        sampleDay.sportType = SportType.running.rawValue
-        sampleDay.comment = "Тестове тренування"
-        sampleDay.duration = 2700
-        sampleDay.steps = 6500
-        sampleDay.calories = 320
-        
-        do {
-            try viewContext.save()
-        } catch {
-            let nsError = error as NSError
-            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-        }
-        
         return result
     }()
 }

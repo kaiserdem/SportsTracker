@@ -8,6 +8,7 @@ struct ActiveWorkout: Identifiable, Equatable {
     var endTime: Date?
     var isPaused = false
     var pauseDuration: TimeInterval = 0
+    var pauseStartTime: Date?
     var locations: [CLLocation] = []
     var totalDistance: Double = 0
     var comment: String?
@@ -33,7 +34,9 @@ struct ActiveWorkout: Identifiable, Equatable {
     
     var duration: TimeInterval {
         let end = endTime ?? Date()
-        return end.timeIntervalSince(startTime) - pauseDuration
+        let currentPauseDuration = isPaused && pauseStartTime != nil ? 
+            Date().timeIntervalSince(pauseStartTime!) : 0
+        return end.timeIntervalSince(startTime) - pauseDuration - currentPauseDuration
     }
     
     var formattedDuration: String {
@@ -133,10 +136,15 @@ struct ActiveWorkout: Identifiable, Equatable {
     
     mutating func pause() {
         isPaused = true
+        pauseStartTime = Date()
     }
     
     mutating func resume() {
+        if let pauseStart = pauseStartTime {
+            pauseDuration += Date().timeIntervalSince(pauseStart)
+        }
         isPaused = false
+        pauseStartTime = nil
     }
     
     mutating func finish() {

@@ -66,14 +66,14 @@ extension CoreDataManager: DependencyKey {
                         var results: [Day] = []
                         
                         for entity in entities {
+                            let entityId = entity.objectID
                             group.addTask { @Sendable in
-                                let entityId = entity.objectID
                                 return await MainActor.run {
                                     let context = PersistenceController.shared.container.viewContext
                                     guard let entity = try? context.existingObject(with: entityId) as? DayEntity else {
                                         return nil
                                     }
-                                    return convertEntityToDay(entity)
+                                    return Self.convertEntityToDay(entity)
                                 }
                             }
                         }
@@ -173,14 +173,14 @@ extension CoreDataManager: DependencyKey {
                         var results: [Day] = []
                         
                         for entity in entities {
+                            let entityId = entity.objectID
                             group.addTask { @Sendable in
-                                let entityId = entity.objectID
                                 return await MainActor.run {
                                     let context = PersistenceController.shared.container.viewContext
                                     guard let entity = try? context.existingObject(with: entityId) as? DayEntity else {
                                         return nil
                                     }
-                                    return convertEntityToDay(entity)
+                                    return Self.convertEntityToDay(entity)
                                 }
                             }
                         }
@@ -214,14 +214,14 @@ extension CoreDataManager: DependencyKey {
                         var results: [Day] = []
                         
                         for entity in entities {
+                            let entityId = entity.objectID
                             group.addTask { @Sendable in
-                                let entityId = entity.objectID
                                 return await MainActor.run {
                                     let context = PersistenceController.shared.container.viewContext
                                     guard let entity = try? context.existingObject(with: entityId) as? DayEntity else {
                                         return nil
                                     }
-                                    return convertEntityToDay(entity)
+                                    return Self.convertEntityToDay(entity)
                                 }
                             }
                         }

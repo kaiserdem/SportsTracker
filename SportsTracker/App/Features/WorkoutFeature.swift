@@ -1,6 +1,7 @@
 import Foundation
 import ComposableArchitecture
 import CoreLocation
+import CoreData
 
 struct WorkoutFeature: Reducer {
     @Dependency(\.locationManager) var locationManager
@@ -8,6 +9,7 @@ struct WorkoutFeature: Reducer {
     struct State: Equatable {
         var workoutState: WorkoutState = .idle
         var isShowingQuickStart = false
+        var isShowingActiveWorkout = false
         var timer: Timer?
         var currentLocation: CLLocation?
         var isLocationEnabled = false
@@ -42,6 +44,8 @@ struct WorkoutFeature: Reducer {
         case stopLocationTracking
         case setErrorMessage(String?)
         case dismissError
+        case showActiveWorkout
+        case hideActiveWorkout
     }
     
     var body: some Reducer<State, Action> {
@@ -81,6 +85,8 @@ struct WorkoutFeature: Reducer {
                 if case .active(var workout) = state.workoutState {
                     workout.pause()
                     state.workoutState = .paused(workout)
+                    // Зупиняємо таймер під час паузи
+                    return .cancel(id: "workout-timer")
                 }
                 return .none
                 
@@ -88,6 +94,14 @@ struct WorkoutFeature: Reducer {
                 if case .paused(var workout) = state.workoutState {
                     workout.resume()
                     state.workoutState = .active(workout)
+                    // Відновлюємо таймер після паузи
+                    return .run { send in
+                        while true {
+                            try await Task.sleep(for: .seconds(1))
+                            await send(.updateTimer)
+                        }
+                    }
+                    .cancellable(id: "workout-timer")
                 }
                 return .none
                 
@@ -114,11 +128,44 @@ struct WorkoutFeature: Reducer {
             case .saveWorkout:
                 guard let workout = state.currentWorkout else { return .none }
                 let day = workout.toDay()
-                return CoreDataEffects.saveDay(day)
-                    .map { _ in .workoutSaved }
+                print("💾 WorkoutFeature: Зберігаю тренування з sportType: \(day.sportType.rawValue)")
+                return .run { send in
+                    do {
+                        let context = await MainActor.run { PersistenceController.shared.container.viewContext }
+                        let dayEntity = DayEntity(context: context)
+                        
+                        dayEntity.id = day.id
+                        dayEntity.date = day.date
+                        dayEntity.sportType = day.sportType.rawValue
+                        print("💾 WorkoutFeature: Збережено в Core Data sportType: \(dayEntity.sportType)")
+                        dayEntity.comment = day.comment
+                        dayEntity.duration = day.duration
+                        dayEntity.steps = Int32(day.steps ?? 0)
+                        dayEntity.calories = Int32(day.calories ?? 0)
+                        
+                        // Додаємо додатки
+                        if let supplements = day.supplements {
+                            for supplement in supplements {
+                                let supplementEntity = SupplementEntity(context: context)
+                                supplementEntity.id = supplement.id
+                                supplementEntity.name = supplement.name
+                                supplementEntity.amount = supplement.amount
+                                supplementEntity.time = supplement.time
+                                supplementEntity.day = dayEntity
+                            }
+                        }
+                        
+                        try context.save()
+                        await send(.workoutSaved)
+                    } catch {
+                        print("Помилка збереження тренування: \(error)")
+                        await send(.workoutSaved) // Все одно завершуємо тренування
+                    }
+                }
                 
             case .workoutSaved:
                 state.workoutState = .idle
+                state.isShowingActiveWorkout = false
                 return .cancel(id: "workout-timer")
                 
             case .updateTimer:
@@ -165,6 +212,14 @@ struct WorkoutFeature: Reducer {
             case .dismissError:
                 state.errorMessage = nil
                 return .none
+                
+            case .showActiveWorkout:
+                state.isShowingActiveWorkout = true
+                return .none
+                
+            case .hideActiveWorkout:
+                state.isShowingActiveWorkout = false
+                return .none
             }
         }
     }
@@ -175,20 +230,15 @@ struct WorkoutFeature: Reducer {
 struct LocationEffects {
     static func startLocationTracking() -> Effect<CLLocation> {
         .run { send in
-            // Тут буде логіка відстеження GPS
-            // Поки що повертаємо тестову локацію
-            let testLocation = CLLocation(
-                latitude: 50.4501,
-                longitude: 30.5234
-            )
-            await send(testLocation)
+            // TODO: Реалізувати реальне відстеження GPS
+            // Поки що не відправляємо локації
         }
     }
     
     static func requestLocationPermission() -> Effect<Bool> {
         .run { send in
-            // Тут буде логіка запиту дозволу на локацію
-            await send(true) // Поки що завжди true
+            // TODO: Реалізувати запит дозволу на локацію
+            await send(false) // Поки що відключено
         }
     }
 }

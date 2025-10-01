@@ -9,6 +9,14 @@ struct HomeView: View {
             NavigationView {
                 ScrollView {
                     VStack(spacing: Theme.Spacing.lg) {
+                        // Індикатор активного тренування
+                        if let workout = viewStore.workout.currentWorkout {
+                            ActiveWorkoutBanner(workout: workout) {
+                                viewStore.send(.workout(.showActiveWorkout))
+                            }
+                            .padding(.horizontal, Theme.Spacing.md)
+                        }
+                        
                         // Привітання
                         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                             Text(viewStore.welcomeMessage)
@@ -79,7 +87,10 @@ struct HomeView: View {
                                     .padding()
                             } else {
                                 ForEach(viewStore.recentDays) { day in
-                                    DayRow(day: day)
+                                    DayRow(day: day) {
+                                        print("🔍 Натиснуто на активність: \(day.sportType.rawValue) - \(day.id)")
+                                        viewStore.send(.showWorkoutDetail(day.id))
+                                    }
                                 }
                             }
                         }
@@ -106,8 +117,8 @@ struct HomeView: View {
                 )
             }
             .fullScreenCover(isPresented: viewStore.binding(
-                get: \.workout.isActive,
-                send: { _ in .workout(.finishWorkout) }
+                get: \.workout.isShowingActiveWorkout,
+                send: { $0 ? .workout(.showActiveWorkout) : .workout(.hideActiveWorkout) }
             )) {
                 ActiveWorkoutView(
                     store: self.store.scope(
@@ -156,10 +167,85 @@ struct QuickActionCard: View {
     }
 }
 
-struct DayRow: View {
-    let day: Day
+struct ActiveWorkoutBanner: View {
+    let workout: ActiveWorkout
+    let onTap: () -> Void
     
     var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: Theme.Spacing.md) {
+                // Іконка тренування
+                Image(systemName: workout.sportType.icon)
+                    .font(.title2)
+                    .foregroundColor(.white)
+                    .frame(width: 40, height: 40)
+                    .background(Theme.Palette.primary)
+                    .clipShape(Circle())
+                
+                // Інформація про тренування
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack {
+                        Text(workout.sportType.rawValue)
+                            .font(Theme.Typography.headline)
+                            .foregroundColor(.white)
+                        
+                        Spacer()
+                        
+                        // Статус тренування
+                        HStack(spacing: 4) {
+                            Circle()
+                                .fill(.white)
+                                .frame(width: 6, height: 6)
+                                .scaleEffect(1.0)
+                                .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: workout.formattedDuration)
+                            
+                            Text(workout.isPaused ? "Пауза" : "Активне")
+                                .font(Theme.Typography.caption)
+                                .foregroundColor(.white.opacity(0.9))
+                        }
+                    }
+                    
+                    HStack {
+                        Text(workout.formattedDuration)
+                            .font(.system(size: 18, weight: .bold, design: .monospaced))
+                            .foregroundColor(.white)
+                        
+                        Spacer()
+                        
+                        if workout.totalDistance > 0 {
+                            Text(workout.formattedDistance)
+                                .font(Theme.Typography.caption)
+                                .foregroundColor(.white.opacity(0.8))
+                        }
+                    }
+                }
+                
+                // Стрілка
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.7))
+            }
+            .padding(Theme.Spacing.md)
+            .background(
+                LinearGradient(
+                    colors: [Theme.Palette.primary, Theme.Palette.accent],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
+            .cornerRadius(Theme.CornerRadius.medium)
+            .shadow(color: Theme.Palette.primary.opacity(0.3), radius: 8, x: 0, y: 4)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+struct DayRow: View {
+    let day: Day
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
         VStack(spacing: Theme.Spacing.sm) {
             HStack(spacing: Theme.Spacing.md) {
                 Image(systemName: day.sportType.icon)
@@ -217,5 +303,7 @@ struct DayRow: View {
         .background(Theme.Gradients.card)
         .cornerRadius(Theme.CornerRadius.medium)
         .shadow(color: Theme.Palette.darkTeal.opacity(0.1), radius: 2, x: 0, y: 1)
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }
