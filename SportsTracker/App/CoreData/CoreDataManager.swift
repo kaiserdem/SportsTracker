@@ -9,6 +9,7 @@ struct CoreDataManager {
     var updateDay: (Day) -> Effect<CoreDataError>
     var fetchDaysInRange: (Date, Date) -> Effect<[Day]>
     var fetchDaysBySportType: (SportType) -> Effect<[Day]>
+    var fetchDayById: (UUID) -> Effect<Day>
 }
 
 enum CoreDataError: Error, Equatable {
@@ -117,17 +118,28 @@ extension CoreDataManager: DependencyKey {
         updateDay: { day in
             .run { send in
                 do {
+                    print("🔄 CoreDataManager: Оновлюю тренування:")
+                    print("   - ID: \(day.id)")
+                    print("   - SportType: '\(day.sportType.rawValue)'")
+                    print("   - Date: \(day.date)")
+                    print("   - Duration: \(day.duration)")
+                    print("   - Comment: \(day.comment ?? "nil")")
+                    print("   - Steps: \(day.steps ?? 0)")
+                    print("   - Calories: \(day.calories ?? 0)")
+                    
                     let context = await MainActor.run { PersistenceController.shared.container.viewContext }
                     let request = NSFetchRequest<DayEntity>(entityName: "DayEntity")
                     request.predicate = NSPredicate(format: "id == %@", day.id as CVarArg)
                     
                     if let entity = try context.fetch(request).first {
+                        print("✅ CoreDataManager: Знайдено entity для оновлення")
                         entity.date = day.date
                         entity.sportType = day.sportType.rawValue
                         entity.comment = day.comment
                         entity.duration = day.duration
                         entity.steps = Int32(day.steps ?? 0)
                         entity.calories = Int32(day.calories ?? 0)
+                        print("✅ CoreDataManager: Оновлено entity з новими даними")
                         
                         // Видаляємо старі додатки
                         if let supplements = entity.supplements {
@@ -151,10 +163,13 @@ extension CoreDataManager: DependencyKey {
                         }
                         
                         try context.save()
+                        print("✅ CoreDataManager: Успішно збережено оновлення в Core Data")
                     } else {
+                        print("❌ CoreDataManager: Тренування з ID \(day.id) не знайдено для оновлення")
                         await send(.updateError("Day not found"))
                     }
                 } catch {
+                    print("❌ CoreDataManager: Помилка оновлення тренування: \(error)")
                     await send(.updateError(error.localizedDescription))
                 }
             }
@@ -240,6 +255,83 @@ extension CoreDataManager: DependencyKey {
                     await send([])
                 }
             }
+        },
+        
+        fetchDayById: { id in
+            .run { send in
+                do {
+                    let context = await MainActor.run { PersistenceController.shared.container.viewContext }
+                    let request = NSFetchRequest<DayEntity>(entityName: "DayEntity")
+                    request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+                    request.fetchLimit = 1
+                    
+                    let entities = try context.fetch(request)
+                    if let entity = entities.first {
+                        print("🔍 CoreDataManager: Знайдено тренування в БД:")
+                        print("   - Entity ID: \(entity.id)")
+                        print("   - Entity SportType: '\(entity.sportType)'")
+                        print("   - Entity Date: \(entity.date)")
+                        print("   - Entity Duration: \(entity.duration)")
+                        print("   - Entity Comment: \(entity.comment ?? "nil")")
+                        print("   - Entity Steps: \(entity.steps)")
+                        print("   - Entity Calories: \(entity.calories)")
+                        
+                        if let day = Self.convertEntityToDay(entity) {
+                            print("✅ CoreDataManager: Конвертовано в Day:")
+                            print("   - Day ID: \(day.id)")
+                            print("   - Day SportType: '\(day.sportType.rawValue)'")
+                            print("   - Day Date: \(day.date)")
+                            print("   - Day Duration: \(day.duration)")
+                            print("   - Day Comment: \(day.comment ?? "nil")")
+                            print("   - Day Steps: \(day.steps ?? 0)")
+                            print("   - Day Calories: \(day.calories ?? 0)")
+                            await send(day)
+                        } else {
+                            print("❌ CoreDataManager: Не вдалося конвертувати entity в Day")
+                            // Повертаємо пустий Day як fallback
+                            let fallbackDay = Day(
+                                id: id,
+                                date: Date(),
+                                sportType: .hiking,
+                                comment: nil,
+                                duration: 0,
+                                steps: nil,
+                                calories: nil,
+                                supplements: nil
+                            )
+                            await send(fallbackDay)
+                        }
+                    } else {
+                        print("❌ CoreDataManager: Тренування з ID \(id) не знайдено в БД")
+                        // Повертаємо пустий Day як fallback
+                        let fallbackDay = Day(
+                            id: id,
+                            date: Date(),
+                            sportType: .hiking,
+                            comment: nil,
+                            duration: 0,
+                            steps: nil,
+                            calories: nil,
+                            supplements: nil
+                        )
+                        await send(fallbackDay)
+                    }
+                } catch {
+                    print("❌ CoreDataManager: Помилка завантаження тренування: \(error)")
+                    // Повертаємо пустий Day як fallback
+                    let fallbackDay = Day(
+                        id: id,
+                        date: Date(),
+                        sportType: .hiking,
+                        comment: nil,
+                        duration: 0,
+                        steps: nil,
+                        calories: nil,
+                        supplements: nil
+                    )
+                    await send(fallbackDay)
+                }
+            }
         }
     )
     
@@ -258,6 +350,7 @@ extension CoreDataManager: DependencyKey {
         }
         
         return Day(
+            id: entity.id,
             date: entity.date,
             sportType: sportType,
             comment: entity.comment,

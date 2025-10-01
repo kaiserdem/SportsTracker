@@ -170,7 +170,6 @@ struct WorkoutDetailView: View {
                     .padding(.vertical, Theme.Spacing.lg)
                 }
                 .background(Theme.Gradients.screenBackground)
-                .navigationTitle("Деталі тренування")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
@@ -399,6 +398,7 @@ struct EditWorkoutView: View {
     
     private func saveChanges() {
         let updatedWorkout = Day(
+            id: workout.id,
             date: workout.date,
             sportType: workout.sportType,
             comment: comment.isEmpty ? nil : comment,

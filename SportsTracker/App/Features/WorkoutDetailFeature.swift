@@ -29,6 +29,8 @@ struct WorkoutDetailFeature: Reducer {
         case workoutDeleted
         case hideActiveWorkout
         case dismissError
+        case notifyWorkoutDeleted
+        case notifyWorkoutUpdated
     }
     
     var body: some Reducer<State, Action> {
@@ -41,7 +43,14 @@ struct WorkoutDetailFeature: Reducer {
                     .map(Action.workoutLoaded)
                 
             case let .workoutLoaded(workout):
-                print("📊 WorkoutDetailFeature: Завантажено тренування: \(workout.sportType.rawValue)")
+                print("📊 WorkoutDetailFeature: Завантажено тренування:")
+                print("   - ID: \(workout.id)")
+                print("   - SportType: '\(workout.sportType.rawValue)'")
+                print("   - Date: \(workout.date)")
+                print("   - Duration: \(workout.duration)")
+                print("   - Comment: \(workout.comment ?? "nil")")
+                print("   - Steps: \(workout.steps ?? 0)")
+                print("   - Calories: \(workout.calories ?? 0)")
                 state.workout = workout
                 state.isLoading = false
                 return .none
@@ -70,6 +79,10 @@ struct WorkoutDetailFeature: Reducer {
                     .map { _ in .workoutUpdated }
                 
             case .workoutUpdated:
+                return .send(.notifyWorkoutUpdated)
+                
+            case .notifyWorkoutUpdated:
+                // Ця дія буде оброблена в AppFeature
                 return .none
                 
             case .deleteWorkout:
@@ -91,6 +104,11 @@ struct WorkoutDetailFeature: Reducer {
                     .map { _ in .workoutDeleted }
                 
             case .workoutDeleted:
+                // Повідомляємо про видалення, щоб оновити список
+                return .send(.notifyWorkoutDeleted)
+                
+            case .notifyWorkoutDeleted:
+                // Ця дія буде оброблена в AppFeature
                 return .none
                 
             case .hideActiveWorkout:
@@ -104,102 +122,3 @@ struct WorkoutDetailFeature: Reducer {
     }
 }
 
-// MARK: - Core Data Effects Extension
-
-extension CoreDataEffects {
-    static func fetchDayById(_ id: UUID) -> Effect<Day> {
-        @Dependency(\.coreDataManager) var coreDataManager
-        return coreDataManager.fetchDayById(id)
-    }
-}
-
-// MARK: - Core Data Manager Extension
-
-extension CoreDataManager {
-    var fetchDayById: (UUID) -> Effect<Day> {
-        { id in
-            .run { send in
-                do {
-                    let context = await MainActor.run { PersistenceController.shared.container.viewContext }
-                    let request = NSFetchRequest<DayEntity>(entityName: "DayEntity")
-                    request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
-                    
-                    let entities = try context.fetch(request)
-                    if let entity = entities.first {
-                        let entityId = entity.objectID
-                        let day = await MainActor.run {
-                            let context = PersistenceController.shared.container.viewContext
-                            guard let entity = try? context.existingObject(with: entityId) as? DayEntity else {
-                                return Day(
-                                    date: Date(),
-                                    sportType: .running,
-                                    comment: nil,
-                                    duration: 0,
-                                    steps: nil,
-                                    calories: nil,
-                                    supplements: nil
-                                )
-                            }
-                            return Self.convertEntityToDay(entity)
-                        }
-                        await send(day)
-                    } else {
-                        await send(Day(
-                            date: Date(),
-                            sportType: .running,
-                            comment: nil,
-                            duration: 0,
-                            steps: nil,
-                            calories: nil,
-                            supplements: nil
-                        ))
-                    }
-                } catch {
-                    await send(Day(
-                        date: Date(),
-                        sportType: .running,
-                        comment: nil,
-                        duration: 0,
-                        steps: nil,
-                        calories: nil,
-                        supplements: nil
-                    ))
-                }
-            }
-        }
-    }
-    
-    private static func convertEntityToDay(_ entity: DayEntity) -> Day {
-        guard let sportType = SportType(rawValue: entity.sportType) else {
-            print("⚠️ WorkoutDetailFeature: Невідомий sportType: '\(entity.sportType)', використовую .hiking")
-            return Day(
-                date: entity.date,
-                sportType: .hiking, // Використовуємо .hiking замість .running
-                comment: entity.comment,
-                duration: entity.duration,
-                steps: entity.steps > 0 ? Int(entity.steps) : nil,
-                calories: entity.calories > 0 ? Int(entity.calories) : nil,
-                supplements: nil
-            )
-        }
-        
-        let supplements = entity.supplements?.compactMap { (supplementEntity: Any) -> Supplement? in
-            guard let supplement = supplementEntity as? SupplementEntity else { return nil }
-            return Supplement(
-                name: supplement.name,
-                amount: supplement.amount,
-                time: supplement.time
-            )
-        }
-        
-        return Day(
-            date: entity.date,
-            sportType: sportType,
-            comment: entity.comment,
-            duration: entity.duration,
-            steps: entity.steps > 0 ? Int(entity.steps) : nil,
-            calories: entity.calories > 0 ? Int(entity.calories) : nil,
-            supplements: supplements
-        )
-    }
-}

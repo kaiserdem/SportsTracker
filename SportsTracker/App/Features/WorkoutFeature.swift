@@ -46,6 +46,7 @@ struct WorkoutFeature: Reducer {
         case dismissError
         case showActiveWorkout
         case hideActiveWorkout
+        case notifyWorkoutCompleted
     }
     
     var body: some Reducer<State, Action> {
@@ -60,11 +61,14 @@ struct WorkoutFeature: Reducer {
                 return .none
                 
             case let .selectSportType(sportType):
+                print("🏃 WorkoutFeature: selectSportType отримано: \(sportType.rawValue)")
                 state.isShowingQuickStart = false
                 return .send(.startWorkout(sportType))
                 
             case let .startWorkout(sportType):
+                print("🚀 WorkoutFeature: startWorkout з sportType: \(sportType.rawValue)")
                 let workout = ActiveWorkout(sportType: sportType)
+                print("🏃 WorkoutFeature: Створено ActiveWorkout з sportType: \(workout.sportType.rawValue)")
                 state.workoutState = .active(workout)
                 state.isShowingQuickStart = false
                 
@@ -128,7 +132,14 @@ struct WorkoutFeature: Reducer {
             case .saveWorkout:
                 guard let workout = state.currentWorkout else { return .none }
                 let day = workout.toDay()
-                print("💾 WorkoutFeature: Зберігаю тренування з sportType: \(day.sportType.rawValue)")
+                print("💾 WorkoutFeature: Зберігаю тренування:")
+                print("   - ID: \(day.id)")
+                print("   - SportType: \(day.sportType.rawValue)")
+                print("   - Date: \(day.date)")
+                print("   - Duration: \(day.duration)")
+                print("   - Comment: \(day.comment ?? "nil")")
+                print("   - Steps: \(day.steps ?? 0)")
+                print("   - Calories: \(day.calories ?? 0)")
                 return .run { send in
                     do {
                         let context = await MainActor.run { PersistenceController.shared.container.viewContext }
@@ -137,7 +148,14 @@ struct WorkoutFeature: Reducer {
                         dayEntity.id = day.id
                         dayEntity.date = day.date
                         dayEntity.sportType = day.sportType.rawValue
-                        print("💾 WorkoutFeature: Збережено в Core Data sportType: \(dayEntity.sportType)")
+                        print("💾 WorkoutFeature: Збережено в Core Data:")
+                        print("   - Entity ID: \(dayEntity.id)")
+                        print("   - Entity SportType: '\(dayEntity.sportType)'")
+                        print("   - Entity Date: \(dayEntity.date)")
+                        print("   - Entity Duration: \(dayEntity.duration)")
+                        print("   - Entity Comment: \(dayEntity.comment ?? "nil")")
+                        print("   - Entity Steps: \(dayEntity.steps)")
+                        print("   - Entity Calories: \(dayEntity.calories)")
                         dayEntity.comment = day.comment
                         dayEntity.duration = day.duration
                         dayEntity.steps = Int32(day.steps ?? 0)
@@ -166,7 +184,14 @@ struct WorkoutFeature: Reducer {
             case .workoutSaved:
                 state.workoutState = .idle
                 state.isShowingActiveWorkout = false
-                return .cancel(id: "workout-timer")
+                return .merge(
+                    .cancel(id: "workout-timer"),
+                    .send(.notifyWorkoutCompleted)
+                )
+                
+            case .notifyWorkoutCompleted:
+                // Ця дія буде оброблена в HomeFeature
+                return .none
                 
             case .updateTimer:
                 // Форсуємо оновлення UI

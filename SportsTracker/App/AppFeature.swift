@@ -63,6 +63,17 @@ struct AppFeature: Reducer {
                 state.workoutDetail = nil
                 return .none
                 
+            case .workoutDetail(.workoutDeleted):
+                state.workoutDetail = nil
+                return .none
+                
+            case .workoutDetail(.notifyWorkoutDeleted):
+                state.workoutDetail = nil
+                return .send(.home(.loadRecentActivities))
+                
+            case .workoutDetail(.notifyWorkoutUpdated):
+                return .send(.home(.loadRecentActivities))
+                
             case .workoutDetail:
                 return .none
             }

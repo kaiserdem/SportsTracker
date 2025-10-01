@@ -32,6 +32,7 @@ struct QuickStartView: View {
                                     sportType: sportType,
                                     isSelected: false
                                 ) {
+                                    print("🎯 QuickStartView: Натиснуто на спорт: \(sportType.rawValue)")
                                     viewStore.send(.selectSportType(sportType))
                                 }
                             }
@@ -47,6 +48,10 @@ struct QuickStartView: View {
                 
             }
             .onAppear {
+                print("📋 QuickStartView: Доступні спорти з дистанцією:")
+                for sport in SportType.distanceSports {
+                    print("   - \(sport.rawValue)")
+                }
                 viewStore.send(.showQuickStart)
             }
         }

@@ -33,6 +33,11 @@ struct CoreDataEffects {
         @Dependency(\.coreDataManager) var coreDataManager
         return coreDataManager.fetchDaysBySportType(sportType)
     }
+    
+    static func fetchDayById(_ id: UUID) -> Effect<Day> {
+        @Dependency(\.coreDataManager) var coreDataManager
+        return coreDataManager.fetchDayById(id)
+    }
 }
 
 // MARK: - Batch Operations

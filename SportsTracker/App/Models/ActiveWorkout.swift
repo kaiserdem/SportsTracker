@@ -199,7 +199,9 @@ struct ActiveWorkout: Identifiable, Equatable {
     // MARK: - Conversion to Day
     
     func toDay() -> Day {
-        return Day(
+        print("🔄 ActiveWorkout: Конвертую в Day з sportType: \(sportType.rawValue)")
+        let day = Day(
+            id: id,
             date: startTime,
             sportType: sportType,
             comment: comment,
@@ -208,6 +210,8 @@ struct ActiveWorkout: Identifiable, Equatable {
             calories: calories,
             supplements: supplements
         )
+        print("✅ ActiveWorkout: Створено Day з sportType: \(day.sportType.rawValue) та ID: \(day.id)")
+        return day
     }
 }
 

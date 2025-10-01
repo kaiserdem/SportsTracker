@@ -15,6 +15,9 @@ struct ActiveWorkoutView: View {
                             Text(workout.sportType.rawValue)
                                 .font(Theme.Typography.title)
                                 .foregroundColor(Theme.Palette.text)
+                                .onAppear {
+                                    print("📱 ActiveWorkoutView: Відображаю спорт: \(workout.sportType.rawValue)")
+                                }
                             
                             Text(workout.sportType.category.rawValue)
                                 .font(Theme.Typography.body)

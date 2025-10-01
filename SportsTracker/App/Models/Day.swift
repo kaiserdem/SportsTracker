@@ -11,6 +11,7 @@ struct Day: Identifiable, Codable, Equatable {
     let supplements: [Supplement]?
     
     init(
+        id: UUID = UUID(),
         date: Date = Date(),
         sportType: SportType,
         comment: String? = nil,
@@ -19,7 +20,7 @@ struct Day: Identifiable, Codable, Equatable {
         calories: Int? = nil,
         supplements: [Supplement]? = nil
     ) {
-        self.id = UUID()
+        self.id = id
         self.date = date
         self.sportType = sportType
         self.comment = comment

@@ -37,6 +37,16 @@ struct HomeFeature: Reducer {
                     .map(Action.daysLoaded)
                 
             case let .daysLoaded(days):
+                print("📋 HomeFeature: Завантажено \(days.count) тренувань:")
+                for (index, day) in days.enumerated() {
+                    print("   \(index + 1). ID: \(day.id)")
+                    print("      SportType: '\(day.sportType.rawValue)'")
+                    print("      Date: \(day.date)")
+                    print("      Duration: \(day.duration)")
+                    print("      Comment: \(day.comment ?? "nil")")
+                    print("      Steps: \(day.steps ?? 0)")
+                    print("      Calories: \(day.calories ?? 0)")
+                }
                 state.recentDays = days
                 state.isLoading = false
                 return .none
@@ -58,6 +68,10 @@ struct HomeFeature: Reducer {
                 // Тут можна додати обробку помилок
                 print("Core Data Error: \(error)")
                 return .none
+                
+            case .workout(.notifyWorkoutCompleted):
+                print("🔄 HomeFeature: Отримав повідомлення про завершення тренування, оновлюю список")
+                return .send(.loadRecentActivities)
                 
             case .workout:
                 return .none
