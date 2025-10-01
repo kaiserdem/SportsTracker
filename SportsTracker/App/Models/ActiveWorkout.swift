@@ -206,6 +206,7 @@ struct ActiveWorkout: Identifiable, Equatable {
             sportType: sportType,
             comment: comment,
             duration: duration,
+            distance: totalDistance,
             steps: steps,
             calories: calories,
             supplements: supplements

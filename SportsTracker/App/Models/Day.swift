@@ -6,6 +6,7 @@ struct Day: Identifiable, Codable, Equatable {
     let sportType: SportType
     let comment: String?
     let duration: TimeInterval // в секундах
+    let distance: Double? // в метрах
     let steps: Int?
     let calories: Int?
     let supplements: [Supplement]?
@@ -16,6 +17,7 @@ struct Day: Identifiable, Codable, Equatable {
         sportType: SportType,
         comment: String? = nil,
         duration: TimeInterval,
+        distance: Double? = nil,
         steps: Int? = nil,
         calories: Int? = nil,
         supplements: [Supplement]? = nil
@@ -25,6 +27,7 @@ struct Day: Identifiable, Codable, Equatable {
         self.sportType = sportType
         self.comment = comment
         self.duration = duration
+        self.distance = distance
         self.steps = steps
         self.calories = calories
         self.supplements = supplements
@@ -57,6 +60,15 @@ struct Day: Identifiable, Codable, Equatable {
         formatter.dateStyle = .long
         formatter.locale = Locale(identifier: "uk_UA")
         return formatter.string(from: date)
+    }
+    
+    var formattedDistance: String {
+        guard let distance = distance else { return "—" }
+        if distance >= 1000 {
+            return String(format: "%.2f км", distance / 1000)
+        } else {
+            return String(format: "%.0f м", distance)
+        }
     }
     
     var hasSupplements: Bool {

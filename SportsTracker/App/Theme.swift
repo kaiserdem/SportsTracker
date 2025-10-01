@@ -61,7 +61,7 @@ struct Theme {
         
         // Градієнт для карток
         static let card = LinearGradient(
-            colors: [Palette.surface, Palette.lightTeal.opacity(0.1)],
+            colors: [Palette.surface, Palette.lightTeal.opacity(0.2)],
             startPoint: .top,
             endPoint: .bottom
         )

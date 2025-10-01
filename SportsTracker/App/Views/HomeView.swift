@@ -312,7 +312,7 @@ struct DayRow: View {
 struct MonthlyStatsView: View {
     let days: [Day]
     
-    private var monthlyDuration: TimeInterval {
+    private var currentMonthDays: [Day] {
         let calendar = Calendar.current
         let now = Date()
         
@@ -320,19 +320,28 @@ struct MonthlyStatsView: View {
         let startOfMonth = calendar.dateInterval(of: .month, for: now)?.start ?? now
         
         // Фільтруємо тренування поточного місяця
-        let currentMonthDays = days.filter { day in
+        let filteredDays = days.filter { day in
             day.date >= startOfMonth
         }
         
-        print("📊 MonthlyStatsView: Знайдено \(currentMonthDays.count) тренувань в поточному місяці")
-        for day in currentMonthDays {
-            print("   - \(day.sportType.rawValue): \(day.duration) секунд")
+        print("📊 MonthlyStatsView: Знайдено \(filteredDays.count) тренувань в поточному місяці")
+        for day in filteredDays {
+            print("   - \(day.sportType.rawValue): \(day.duration) секунд, дистанція: \(day.distance ?? 0) м")
         }
         
-        // Сумуємо тривалість
+        return filteredDays
+    }
+    
+    private var monthlyDuration: TimeInterval {
         let totalDuration = currentMonthDays.reduce(0) { $0 + $1.duration }
         print("📊 MonthlyStatsView: Загальна тривалість: \(totalDuration) секунд")
         return totalDuration
+    }
+    
+    private var monthlyDistance: Double {
+        let totalDistance = currentMonthDays.compactMap { $0.distance }.reduce(0, +)
+        print("📊 MonthlyStatsView: Загальна дистанція: \(totalDistance) метрів")
+        return totalDistance
     }
     
     private var formattedDuration: String {
@@ -352,17 +361,43 @@ struct MonthlyStatsView: View {
         }
     }
     
+    private var formattedDistance: String {
+        if monthlyDistance >= 1000 {
+            return String(format: "%.2f км", monthlyDistance / 1000)
+        } else {
+            return String(format: "%.0f м", monthlyDistance)
+        }
+    }
+    
     var body: some View {
-        VStack(spacing: Theme.Spacing.xs) {
+        VStack(spacing: Theme.Spacing.sm) {
             Text("В цьому місяці")
                 .font(Theme.Typography.body)
                 .foregroundColor(Theme.Palette.textSecondary)
             
-            Text(formattedDuration)
-                .font(.system(size: 32, weight: .bold, design: .rounded))
-                .foregroundColor(Theme.Palette.primary)
+            // Тривалість
+            VStack(spacing: 4) {
+                Text(formattedDuration)
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .foregroundColor(Theme.Palette.primary)
+                
+                Text("Тривалість")
+                    .font(Theme.Typography.caption)
+                    .foregroundColor(Theme.Palette.textSecondary)
+            }
+            
+            // Дистанція
+            VStack(spacing: 4) {
+                Text(formattedDistance)
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .foregroundColor(Theme.Palette.secondary)
+                
+                Text("Дистанція")
+                    .font(Theme.Typography.caption)
+                    .foregroundColor(Theme.Palette.textSecondary)
+            }
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, minHeight: 200)
         .padding(.vertical, Theme.Spacing.lg)
         .background(
             RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
@@ -377,6 +412,8 @@ struct MonthlyStatsView: View {
 struct MonthlyCalendarView: View {
     let days: [Day]
     
+    @State private var displayedDate = Date()
+    
     private var calendar: Calendar {
         Calendar.current
     }
@@ -386,23 +423,27 @@ struct MonthlyCalendarView: View {
     }
     
     private var currentMonth: Int {
-        calendar.component(.month, from: currentDate)
+        calendar.component(.month, from: displayedDate)
     }
     
     private var currentYear: Int {
-        calendar.component(.year, from: currentDate)
+        calendar.component(.year, from: displayedDate)
     }
     
     private var currentDay: Int {
         calendar.component(.day, from: currentDate)
     }
     
+    private var isCurrentMonth: Bool {
+        calendar.isDate(displayedDate, equalTo: currentDate, toGranularity: .month)
+    }
+    
     private var daysInMonth: Int {
-        calendar.range(of: .day, in: .month, for: currentDate)?.count ?? 30
+        calendar.range(of: .day, in: .month, for: displayedDate)?.count ?? 30
     }
     
     private var firstDayOfMonth: Date {
-        calendar.date(from: DateComponents(year: currentYear, month: currentMonth, day: 1)) ?? currentDate
+        calendar.date(from: DateComponents(year: currentYear, month: currentMonth, day: 1)) ?? displayedDate
     }
     
     private var firstWeekday: Int {
@@ -413,7 +454,7 @@ struct MonthlyCalendarView: View {
     }
     
     private func hasWorkoutOnDay(_ day: Int) -> Bool {
-        let targetDate = calendar.date(from: DateComponents(year: currentYear, month: currentMonth, day: day)) ?? currentDate
+        let targetDate = calendar.date(from: DateComponents(year: currentYear, month: currentMonth, day: day)) ?? displayedDate
         let hasWorkout = days.contains { workoutDay in
             calendar.isDate(workoutDay.date, inSameDayAs: targetDate)
         }
@@ -422,17 +463,55 @@ struct MonthlyCalendarView: View {
     
     var body: some View {
         VStack(spacing: Theme.Spacing.sm) {
-            // Заголовок календаря
+            // Заголовок календаря з кнопками навігації
             HStack {
-                Text("Календар")
-                    .font(Theme.Typography.body)
-                    .foregroundColor(Theme.Palette.textSecondary)
+                // Кнопка попереднього місяця
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        displayedDate = calendar.date(byAdding: .month, value: -1, to: displayedDate) ?? displayedDate
+                    }
+                }) {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(Theme.Palette.primary)
+                        .frame(width: 28, height: 28)
+                        .background(
+                            Circle()
+                                .fill(Theme.Palette.primary.opacity(0.1))
+                        )
+                }
                 
                 Spacer()
                 
-                Text("\(currentMonth)/\(currentYear)")
-                    .font(Theme.Typography.caption)
-                    .foregroundColor(Theme.Palette.textSecondary)
+                // Назва місяця та року
+                HStack(spacing: 2) {
+                    Text("\(currentMonth)")
+                        .font(Theme.Typography.caption)
+                        .foregroundColor(Theme.Palette.text)
+                        .fontWeight(.medium)
+                    
+                    Text("\(currentYear)")
+                        .font(Theme.Typography.caption)
+                        .foregroundColor(Theme.Palette.textSecondary)
+                }
+                
+                Spacer()
+                
+                // Кнопка наступного місяця
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        displayedDate = calendar.date(byAdding: .month, value: 1, to: displayedDate) ?? displayedDate
+                    }
+                }) {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(Theme.Palette.primary)
+                        .frame(width: 28, height: 28)
+                        .background(
+                            Circle()
+                                .fill(Theme.Palette.primary.opacity(0.1))
+                        )
+                }
             }
             
             // Дні тижня
@@ -470,7 +549,7 @@ struct MonthlyCalendarView: View {
                 // Дні місяця
                 ForEach(1...daysInMonth, id: \.self) { day in
                     let hasWorkout = hasWorkoutOnDay(day)
-                    let isToday = day == currentDay
+                    let isToday = isCurrentMonth && day == currentDay
                     
                     // Діагностика для сьогоднішнього дня
                     if isToday {
@@ -493,6 +572,7 @@ struct MonthlyCalendarView: View {
                 }
             }
         }
+        .frame(minHeight: 200)
         .padding(.vertical, Theme.Spacing.lg)
         .padding(.horizontal, Theme.Spacing.md)
         .background(
