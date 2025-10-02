@@ -8,12 +8,43 @@ struct CalendarView: View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             NavigationView {
                 VStack(spacing: Theme.Spacing.lg) {
+                    // Add Workout Button
+                    Button(action: {
+                        // Action to add workout
+                    }) {
+                        HStack(spacing: 16) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.system(size: 24, weight: .medium, design: .rounded))
+                            
+                            Text("Add Workout")
+                                .font(.system(size: 22, weight: .semibold, design: .rounded))
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 20)
+                        .background(
+                            LinearGradient(
+                                colors: [
+                                    Theme.Palette.primary,
+                                    Theme.Palette.primary.opacity(0.8),
+                                    Theme.Palette.accent
+                                ],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .cornerRadius(25)
+                        .shadow(color: Theme.Palette.primary.opacity(0.4), radius: 8, x: 0, y: 4)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .padding(.horizontal, Theme.Spacing.md)
+                    
                     // Calendar
                     VStack(spacing: Theme.Spacing.md) {
                         MonthlyCalendarView(
                             days: viewStore.events,
                             titleFontSize: 22,
-                            dayFontSize: 16,
+                            dayFontSize: 18,
                             circleSize: 28,
                             buttonSize: 40,
                             weekdayFontSize: 16
@@ -27,7 +58,7 @@ struct CalendarView: View {
                     
                     // Events list for selected date
                     VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                        Text("Events on \(formatDate(viewStore.selectedDate))")
+                        Text("Workouts on \(formatDate(viewStore.selectedDate))")
                             .font(.system(size: 20, weight: .semibold, design: .rounded))
                             .foregroundColor(Theme.Palette.text)
                             .frame(maxWidth: .infinity, alignment: .leading)
