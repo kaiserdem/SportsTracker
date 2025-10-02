@@ -16,12 +16,12 @@ struct ActiveWorkout: Identifiable, Equatable {
     var calories: Int?
     var supplements: [Supplement]?
     
-    // GPS-дані
-    var currentSpeed: Double = 0 // м/с
-    var averageSpeed: Double = 0 // м/с
-    var maxSpeed: Double = 0 // м/с
-    var activeTime: TimeInterval = 0 // час у русі
-    var stoppedTime: TimeInterval = 0 // час у зупинках
+    // GPS data
+    var currentSpeed: Double = 0 // m/s
+    var averageSpeed: Double = 0 // m/s
+    var maxSpeed: Double = 0 // m/s
+    var activeTime: TimeInterval = 0 // active time
+    var stoppedTime: TimeInterval = 0 // stopped time
     var lastLocationTime: Date?
     var isCurrentlyMoving = false
     
@@ -160,7 +160,7 @@ struct ActiveWorkout: Identifiable, Equatable {
     mutating func addLocation(_ location: CLLocation) {
         let now = Date()
         
-        // Оновлюємо час активності/зупинки
+        // Update active/stopped time
         if let lastTime = lastLocationTime {
             let timeInterval = now.timeIntervalSince(lastTime)
             
@@ -179,19 +179,19 @@ struct ActiveWorkout: Identifiable, Equatable {
             let distance = LocationUtils.distance(from: lastLocation, to: location)
             totalDistance += distance
             
-            // Розрахунок швидкості
+            // Speed calculation
             let speed = LocationUtils.speed(from: lastLocation, to: location)
             currentSpeed = speed
             
-            // Оновлення максимальної швидкості
+            // Maximum speed update
             if speed > maxSpeed {
                 maxSpeed = speed
             }
             
-            // Визначення чи рухається
+            // Check if moving
             isCurrentlyMoving = LocationUtils.isMoving(speed)
             
-            // Розрахунок середньої швидкості
+            // Average speed calculation
             if duration > 0 {
                 averageSpeed = totalDistance / duration
             }
@@ -205,7 +205,7 @@ struct ActiveWorkout: Identifiable, Equatable {
     // MARK: - Conversion to Day
     
     func toDay() -> Day {
-        print("🔄 ActiveWorkout: Конвертую в Day з sportType: \(sportType.rawValue)")
+        print("🔄 ActiveWorkout: Converting to Day with sportType: \(sportType.rawValue)")
         let day = Day(
             id: id,
             date: startTime,
@@ -217,7 +217,7 @@ struct ActiveWorkout: Identifiable, Equatable {
             calories: calories,
             supplements: supplements
         )
-        print("✅ ActiveWorkout: Створено Day з sportType: \(day.sportType.rawValue) та ID: \(day.id)")
+        print("✅ ActiveWorkout: Created Day with sportType: \(day.sportType.rawValue) and ID: \(day.id)")
         return day
     }
 }

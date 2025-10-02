@@ -48,7 +48,7 @@ struct ActiveWorkoutView: View {
                                         .scaleEffect(1.0)
                                         .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: workout.formattedDuration)
                                     
-                                    Text("Активне тренування")
+                                    Text("Active Workout")
                                         .font(Theme.Typography.caption)
                                         .foregroundColor(Theme.Palette.textSecondary)
                                 }

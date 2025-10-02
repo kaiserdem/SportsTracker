@@ -441,7 +441,6 @@ struct EditWorkoutView: View {
                 }
             }
             .background(Theme.Gradients.screenBackground)
-            .navigationTitle("Редагування")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -507,7 +506,7 @@ struct CustomBackButton: View {
             HStack(spacing: 4) {
                 Image(systemName: "chevron.left")
                     .font(.system(size: 14, weight: .medium))
-                Text("Назад")
+                Text("Back")
                     .font(Theme.Typography.body)
             }
             .foregroundColor(Theme.Palette.primary)

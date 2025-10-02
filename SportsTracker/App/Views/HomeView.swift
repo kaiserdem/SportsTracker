@@ -440,13 +440,51 @@ struct MonthlyStatsView: View {
         VStack(spacing: Theme.Spacing.md) {
             // 1. Назва
             
-            // 2. Форматована тривалість з двокрапками
-            VStack(spacing: 4) {
-                Text(formattedDuration)
-                    .font(.system(size: 44, weight: .bold, design: .rounded))
-                    .foregroundColor(Theme.Palette.primary)
-                    .minimumScaleFactor(0.5)
-                    .lineLimit(1)
+            // 2. Форматована тривалість з HStack компонентами
+            HStack(spacing: Theme.Spacing.sm) {
+                // Дні (показуємо тільки якщо є)
+                if daysCount > 0 {
+                    VStack(spacing: 4) {
+                        Text("\(daysCount)")
+                            .font(.system(size: 44, weight: .bold, design: .rounded))
+                            .foregroundColor(Theme.Palette.primary)
+                        Text("days")
+                            .font(.system(size: 12, weight: .medium, design: .rounded))
+                            .foregroundColor(Theme.Palette.textSecondary)
+                    }
+                }
+                
+                // Години
+                VStack(spacing: 4) {
+                    Text("\(hoursCount)")
+                        .font(.system(size: 44, weight: .bold, design: .rounded))
+                        .foregroundColor(Theme.Palette.primary)
+                    Text("hrs")
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .foregroundColor(Theme.Palette.textSecondary)
+                }
+                
+                // Хвилини
+                VStack(spacing: 4) {
+                    Text("\(minutesCount)")
+                        .font(.system(size: 44, weight: .bold, design: .rounded))
+                        .foregroundColor(Theme.Palette.primary)
+                    Text("min")
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                            .foregroundColor(Theme.Palette.textSecondary)
+                }
+                
+                // Секунди
+                if secondsCount > 0 {
+                    VStack(spacing: 4) {
+                        Text("\(secondsCount)")
+                            .font(.system(size: 44, weight: .bold, design: .rounded))
+                            .foregroundColor(Theme.Palette.primary)
+                        Text("sec")
+                            .font(.system(size: 12, weight: .medium, design: .rounded))
+                            .foregroundColor(Theme.Palette.textSecondary)
+                    }
+                }
             }
             
             // 3. Назва "Duration"

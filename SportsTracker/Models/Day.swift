@@ -75,14 +75,14 @@ struct Day: Identifiable, Codable, Equatable {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .short
-        formatter.locale = Locale(identifier: "uk_UA")
+        formatter.locale = Locale(identifier: "en_US")
         return formatter.string(from: date)
     }
     
     var formattedDateOnly: String {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
-        formatter.locale = Locale(identifier: "uk_UA")
+        formatter.locale = Locale(identifier: "en_US")
         return formatter.string(from: date)
     }
     
@@ -118,7 +118,7 @@ struct Supplement: Identifiable, Codable, Equatable {
     let id: UUID
     let name: String
     let amount: String
-    let time: String // "до тренування", "під час", "після тренування"
+    let time: String // "before workout", "during", "after workout"
     
     init(name: String, amount: String, time: String) {
         self.id = UUID()
@@ -129,9 +129,9 @@ struct Supplement: Identifiable, Codable, Equatable {
     
     var icon: String {
         switch name.lowercased() {
-        case let name where name.contains("протеїн"):
+        case let name where name.contains("protein"):
             return "drop.fill"
-        case let name where name.contains("креатин"):
+        case let name where name.contains("creatine"):
             return "pills.fill"
         case let name where name.contains("bcaa"):
             return "capsule.fill"
@@ -185,9 +185,9 @@ extension Day {
 }
 
 enum WorkoutIntensity: String, CaseIterable {
-    case low = "Низька"
-    case medium = "Середня"
-    case high = "Висока"
+    case low = "Low"
+    case medium = "Medium"
+    case high = "High"
     
     var color: String {
         switch self {
