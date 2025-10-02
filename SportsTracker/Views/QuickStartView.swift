@@ -9,19 +9,19 @@ struct QuickStartView: View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             NavigationView {
                 VStack(spacing: Theme.Spacing.lg) {
-                    // Заголовок
+                    // Header
                     VStack(spacing: Theme.Spacing.sm) {
-                        Text("Почати тренування")
+                        Text("Start Workout")
                             .font(Theme.Typography.largeTitle)
                             .foregroundColor(Theme.Palette.text)
                         
-                        Text("Оберіть тип спорту")
+                        Text("Select sport type")
                             .font(Theme.Typography.body)
                             .foregroundColor(Theme.Palette.textSecondary)
                     }
                     .padding(.top, Theme.Spacing.lg)
                     
-                    // Сітка типів спорту
+                    // Sport types grid
                     ScrollView {
                         LazyVGrid(columns: [
                             GridItem(.flexible()),
@@ -32,7 +32,7 @@ struct QuickStartView: View {
                                     sportType: sportType,
                                     isSelected: false
                                 ) {
-                                    print("🎯 QuickStartView: Натиснуто на спорт: \(sportType.rawValue)")
+                                    print("🎯 QuickStartView: Pressed sport: \(sportType.rawValue)")
                                     viewStore.send(.selectSportType(sportType))
                                 }
                             }
@@ -43,18 +43,18 @@ struct QuickStartView: View {
                     Spacer()
                 }
                 .background(Theme.Gradients.screenBackground)
-                .navigationTitle("Швидкий старт")
+                .navigationTitle("Quick Start")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button(action: {
-                            print("🔙 QuickStartView: Натиснуто кнопку назад")
+                            print("🔙 QuickStartView: Pressed back button")
                             viewStore.send(.hideQuickStart)
                         }) {
                             HStack(spacing: 4) {
                                 Image(systemName: "chevron.left")
                                     .font(.system(size: 14, weight: .medium))
-                                Text("Назад")
+                                Text("Back")
                                     .font(Theme.Typography.body)
                             }
                             .foregroundColor(Theme.Palette.primary)
@@ -75,7 +75,7 @@ struct QuickStartView: View {
                 
             }
             .onAppear {
-                print("📋 QuickStartView: Доступні спорти з дистанцією:")
+                print("📋 QuickStartView: Available distance sports:")
                 for sport in SportType.distanceSports {
                     print("   - \(sport.rawValue)")
                 }
@@ -153,7 +153,7 @@ struct PopularSportsView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-            Text("Популярні")
+            Text("Popular")
                 .font(Theme.Typography.headline)
                 .foregroundColor(Theme.Palette.text)
             

@@ -9,23 +9,23 @@ struct AddActivityView: View {
             NavigationView {
                 ScrollView {
                     VStack(spacing: Theme.Spacing.lg) {
-                        // Заголовок
+                        // Header
                         VStack(spacing: Theme.Spacing.sm) {
-                            Text("Додати активність")
+                            Text("Add Activity")
                                 .font(Theme.Typography.largeTitle)
                                 .foregroundColor(Theme.Palette.text)
                             
-                            Text("Заповніть деталі вашого тренування")
+                            Text("Fill in your workout details")
                                 .font(Theme.Typography.body)
                                 .foregroundColor(Theme.Palette.textSecondary)
                         }
                         .padding(.top, Theme.Spacing.lg)
                         
-                        // Форма
+                        // Form
                         VStack(spacing: Theme.Spacing.lg) {
-                            // Вибрати спорт
+                            // Select sport
                             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                                Text("Вид спорту")
+                                Text("Sport Type")
                                     .font(Theme.Typography.headline)
                                     .foregroundColor(Theme.Palette.text)
                                 
@@ -41,14 +41,14 @@ struct AddActivityView: View {
                                 }
                             }
                             
-                            // Дата
+                            // Date
                             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                                Text("Дата")
+                                Text("Date")
                                     .font(Theme.Typography.headline)
                                     .foregroundColor(Theme.Palette.text)
                                 
                                 DatePicker(
-                                    "Дата тренування",
+                                    "Workout date",
                                     selection: viewStore.binding(
                                         get: \.selectedDate,
                                         send: AddActivityFeature.Action.setDate
@@ -64,15 +64,15 @@ struct AddActivityView: View {
                                 )
                             }
                             
-                            // Час початку та кінця
+                            // Start and end time
                             HStack(spacing: Theme.Spacing.md) {
                                 VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                                    Text("Час початку")
+                                    Text("Start Time")
                                         .font(Theme.Typography.headline)
                                         .foregroundColor(Theme.Palette.text)
                                     
                                     DatePicker(
-                                        "Початок",
+                                        "Start",
                                         selection: viewStore.binding(
                                             get: \.startTime,
                                             send: AddActivityFeature.Action.setStartTime
@@ -89,12 +89,12 @@ struct AddActivityView: View {
                                 }
                                 
                                 VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                                    Text("Час кінця")
+                                    Text("End Time")
                                         .font(Theme.Typography.headline)
                                         .foregroundColor(Theme.Palette.text)
                                     
                                     DatePicker(
-                                        "Кінець",
+                                        "End",
                                         selection: viewStore.binding(
                                             get: \.endTime,
                                             send: AddActivityFeature.Action.setEndTime
@@ -111,9 +111,9 @@ struct AddActivityView: View {
                                 }
                             }
                             
-                            // Тривалість (автоматично розрахована)
+                            // Duration (automatically calculated)
                             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                                Text("Тривалість")
+                                Text("Duration")
                                     .font(Theme.Typography.headline)
                                     .foregroundColor(Theme.Palette.text)
                                 
@@ -128,9 +128,9 @@ struct AddActivityView: View {
                                     )
                             }
                             
-                            // Дистанція
+                            // Distance
                             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                                Text("Дистанція")
+                                Text("Distance")
                                     .font(Theme.Typography.headline)
                                     .foregroundColor(Theme.Palette.text)
                                 
@@ -142,21 +142,21 @@ struct AddActivityView: View {
                                     .textFieldStyle(.roundedBorder)
                                     .keyboardType(.decimalPad)
                                     
-                                    Picker("Одиниця", selection: viewStore.binding(
+                                    Picker("Unit", selection: viewStore.binding(
                                         get: \.distanceUnit,
                                         send: AddActivityFeature.Action.setDistanceUnit
                                     )) {
-                                        Text("м").tag(DistanceUnit.meters)
-                                        Text("км").tag(DistanceUnit.kilometers)
+                                        Text("m").tag(DistanceUnit.meters)
+                                        Text("km").tag(DistanceUnit.kilometers)
                                     }
                                     .pickerStyle(.segmented)
                                     .frame(width: 80)
                                 }
                             }
                             
-                            // Калорії
+                            // Calories
                             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                                Text("Калорії")
+                                Text("Calories")
                                     .font(Theme.Typography.headline)
                                     .foregroundColor(Theme.Palette.text)
                                 
@@ -168,13 +168,13 @@ struct AddActivityView: View {
                                 .keyboardType(.numberPad)
                             }
                             
-                            // Коментар
+                            // Comment
                             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                                Text("Коментар")
+                                Text("Comment")
                                     .font(Theme.Typography.headline)
                                     .foregroundColor(Theme.Palette.text)
                                 
-                                TextField("Додайте коментар до тренування...", text: viewStore.binding(
+                                TextField("Add comment to workout...", text: viewStore.binding(
                                     get: \.comment,
                                     send: AddActivityFeature.Action.setComment
                                 ), axis: .vertical)
@@ -184,11 +184,11 @@ struct AddActivityView: View {
                         }
                         .padding(.horizontal, Theme.Spacing.lg)
                         
-                        // Кнопка збереження
+                        // Save button
                         Button(action: {
                             viewStore.send(.saveActivity)
                         }) {
-                            Text("Зберегти активність")
+                            Text("Save Activity")
                                 .font(Theme.Typography.headline)
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
@@ -213,7 +213,7 @@ struct AddActivityView: View {
                             HStack(spacing: 4) {
                                 Image(systemName: "chevron.left")
                                     .font(.system(size: 14, weight: .medium))
-                                Text("Назад")
+                                Text("Back")
                                     .font(Theme.Typography.body)
                             }
                             .foregroundColor(Theme.Palette.primary)

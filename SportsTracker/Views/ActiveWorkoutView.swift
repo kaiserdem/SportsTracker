@@ -10,7 +10,7 @@ struct ActiveWorkoutView: View {
             NavigationView {
                 VStack(spacing: Theme.Spacing.lg) {
                     if let workout = viewStore.currentWorkout {
-                        // Заголовок
+                        // Header
                         VStack(spacing: Theme.Spacing.sm) {
                             Text(workout.sportType.rawValue)
                                 .font(Theme.Typography.title)
@@ -25,7 +25,7 @@ struct ActiveWorkoutView: View {
                         }
                         .padding(.top, Theme.Spacing.lg)
                         
-                        // Таймер
+                        // Timer
                         VStack(spacing: Theme.Spacing.sm) {
                             Text(workout.formattedDuration)
                                 .font(.system(size: 60, weight: .bold, design: .monospaced))
@@ -33,7 +33,7 @@ struct ActiveWorkoutView: View {
                                 .animation(.easeInOut(duration: 0.1), value: workout.formattedDuration)
                             
                             if case .paused = viewStore.workoutState {
-                                Text("Пауза")
+                                Text("Paused")
                                     .font(Theme.Typography.headline)
                                     .foregroundColor(Theme.Palette.secondary)
                                     .padding(.horizontal, Theme.Spacing.md)
@@ -158,7 +158,7 @@ struct ActiveWorkoutView: View {
                                     Spacer()
                                     Image(systemName: "figure.run")
                                         .foregroundColor(Theme.Palette.primary)
-                                    Text("Рух")
+                                    Text("Movement")
                                         .font(Theme.Typography.caption)
                                         .foregroundColor(Theme.Palette.primary)
                                 }
@@ -227,7 +227,7 @@ struct WorkoutSummaryView: View {
             VStack(spacing: Theme.Spacing.lg) {
                 // Заголовок
                 VStack(spacing: Theme.Spacing.sm) {
-                    Text("Тренування завершено!")
+                    Text("Workout Completed!")
                         .font(Theme.Typography.title)
                         .foregroundColor(Theme.Palette.text)
                     
@@ -237,31 +237,31 @@ struct WorkoutSummaryView: View {
                 }
                 .padding(.top, Theme.Spacing.lg)
                 
-                // Підсумок
+                // Summary
                 VStack(spacing: Theme.Spacing.md) {
-                    SummaryRow(title: "Тривалість", value: workout.formattedDuration)
-                    SummaryRow(title: "Дистанція", value: workout.formattedDistance)
-                    SummaryRow(title: "Середня швидкість", value: workout.formattedAverageSpeed)
+                    SummaryRow(title: "Duration", value: workout.formattedDuration)
+                    SummaryRow(title: "Distance", value: workout.formattedDistance)
+                    SummaryRow(title: "Average Speed", value: workout.formattedAverageSpeed)
                 }
                 .padding(.horizontal, Theme.Spacing.lg)
                 
-                // Додаткова інформація
+                // Additional information
                 VStack(spacing: Theme.Spacing.md) {
-                    Text("Додаткова інформація")
+                    Text("Additional Information")
                         .font(Theme.Typography.headline)
                         .foregroundColor(Theme.Palette.text)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     VStack(spacing: Theme.Spacing.md) {
-                        TextField("Коментар (необов'язково)", text: $comment)
+                        TextField("Comment (optional)", text: $comment)
                             .textFieldStyle(.roundedBorder)
                         
                         HStack(spacing: Theme.Spacing.md) {
-                            TextField("Калорії", text: $calories)
+                            TextField("Calories", text: $calories)
                                 .textFieldStyle(.roundedBorder)
                                 .keyboardType(.numberPad)
                             
-                            TextField("Кроки", text: $steps)
+                            TextField("Steps", text: $steps)
                                 .textFieldStyle(.roundedBorder)
                                 .keyboardType(.numberPad)
                         }
@@ -291,7 +291,7 @@ struct WorkoutSummaryView: View {
                 .padding(.bottom, Theme.Spacing.lg)
             }
             .background(Theme.Gradients.screenBackground)
-            .navigationTitle("Підсумок")
+            .navigationTitle("Summary")
             .navigationBarTitleDisplayMode(.inline)
         }
     }

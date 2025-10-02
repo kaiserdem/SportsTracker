@@ -11,7 +11,7 @@ struct WorkoutDetailView: View {
                 ScrollView {
                     VStack(spacing: Theme.Spacing.lg) {
                         if let workout = viewStore.workout {
-                            // Заголовок тренування
+                            // Workout header
                             VStack(spacing: Theme.Spacing.md) {
                                 HStack {
                                     Image(systemName: workout.sportType.icon)
@@ -31,23 +31,23 @@ struct WorkoutDetailView: View {
                                     Spacer()
                                 }
                                 
-                                // Основна статистика
+                                // Main statistics
                                 HStack(spacing: Theme.Spacing.lg) {
                                     DetailStatisticItem(
-                                        title: "Тривалість",
+                                        title: "Duration",
                                         value: workout.formattedDuration,
                                         icon: "clock"
                                     )
                                     
                                     DetailStatisticItem(
-                                        title: "Дистанція",
+                                        title: "Distance",
                                         value: formatDistance(workout),
                                         icon: "location"
                                     )
                                     
                                     if let calories = workout.calories {
                                         DetailStatisticItem(
-                                            title: "Калорії",
+                                            title: "Calories",
                                             value: "\(calories)",
                                             icon: "flame"
                                         )
@@ -59,29 +59,29 @@ struct WorkoutDetailView: View {
                             .cornerRadius(Theme.CornerRadius.medium)
                             .shadow(color: Theme.Palette.darkTeal.opacity(0.1), radius: 2, x: 0, y: 1)
                             
-                            // Детальна статистика
+                            // Detailed statistics
                             VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                                Text("Детальна статистика")
+                                Text("Detailed Statistics")
                                     .font(Theme.Typography.headline)
                                     .foregroundColor(Theme.Palette.text)
                                 
                                 VStack(spacing: Theme.Spacing.sm) {
                                     if let steps = workout.steps, !workout.sportType.hasSteps {
                                         DetailRow(
-                                            title: "Кроки",
+                                            title: "Steps",
                                             value: "\(steps)",
                                             icon: "figure.walk"
                                         )
                                     }
                                     
                                     DetailRow(
-                                        title: "Дата початку",
+                                        title: "Start Date",
                                         value: formatStartTime(workout),
                                         icon: "calendar"
                                     )
                                     
                                     DetailRow(
-                                        title: "Час закінчення",
+                                        title: "End Time",
                                         value: formatEndTime(workout),
                                         icon: "clock.badge.checkmark"
                                     )
@@ -92,10 +92,10 @@ struct WorkoutDetailView: View {
                             .cornerRadius(Theme.CornerRadius.medium)
                             .shadow(color: Theme.Palette.darkTeal.opacity(0.1), radius: 2, x: 0, y: 1)
                             
-                            // Коментар
+                            // Comment
                             if let comment = workout.comment, !comment.isEmpty {
                                 VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                                    Text("Коментар")
+                                    Text("Comment")
                                         .font(Theme.Typography.headline)
                                         .foregroundColor(Theme.Palette.text)
                                     
@@ -113,10 +113,10 @@ struct WorkoutDetailView: View {
                                 .shadow(color: Theme.Palette.darkTeal.opacity(0.1), radius: 2, x: 0, y: 1)
                             }
                             
-                            // Додатки
+                            // Supplements
                             if workout.hasSupplements {
                                 VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                                    Text("Додатки")
+                                    Text("Supplements")
                                         .font(Theme.Typography.headline)
                                         .foregroundColor(Theme.Palette.text)
                                     
@@ -130,9 +130,9 @@ struct WorkoutDetailView: View {
                                 .shadow(color: Theme.Palette.darkTeal.opacity(0.1), radius: 2, x: 0, y: 1)
                             }
                             
-                            // Кнопки дій
+                            // Action buttons
                             VStack(spacing: Theme.Spacing.md) {
-                                Button("Редагувати тренування") {
+                                Button("Edit Workout") {
                                     print("🔘 WorkoutDetailView: Натиснуто 'Редагувати тренування'")
                                     viewStore.send(.editWorkout)
                                 }
@@ -140,7 +140,7 @@ struct WorkoutDetailView: View {
                                 .tint(Theme.Palette.primary)
                                 .frame(maxWidth: .infinity)
                                 
-                                Button("Видалити тренування") {
+                                Button("Delete Workout") {
                                     print("🗑️ WorkoutDetailView: Натиснуто 'Видалити тренування'")
                                     viewStore.send(.deleteWorkout)
                                 }
@@ -150,17 +150,17 @@ struct WorkoutDetailView: View {
                             }
                             .padding(.top, Theme.Spacing.lg)
                         } else {
-                            // Помилка завантаження
+                            // Loading error
                             VStack(spacing: Theme.Spacing.md) {
                                 Image(systemName: "exclamationmark.triangle")
                                     .font(.largeTitle)
                                     .foregroundColor(Theme.Palette.accent)
                                 
-                                Text("Не вдалося завантажити тренування")
+                                Text("Failed to load workout")
                                     .font(Theme.Typography.headline)
                                     .foregroundColor(Theme.Palette.text)
                                 
-                                Text("Спробуйте пізніше")
+                                Text("Try again later")
                                     .font(Theme.Typography.body)
                                     .foregroundColor(Theme.Palette.textSecondary)
                             }
@@ -185,21 +185,21 @@ struct WorkoutDetailView: View {
                 viewStore.send(.onAppear)
             }
             .alert(
-                "Видалити тренування?",
+                "Delete workout?",
                 isPresented: viewStore.binding(
                     get: \.isShowingDeleteAlert,
                     send: { $0 ? .showDeleteAlert : .hideDeleteAlert }
                 )
             ) {
-                Button("Видалити", role: .destructive) {
+                Button("Delete", role: .destructive) {
                     print("🗑️ WorkoutDetailView: Підтверджено видалення в алерті")
                     viewStore.send(.confirmDelete)
                 }
-                Button("Скасувати", role: .cancel) {
+                Button("Cancel", role: .cancel) {
                     viewStore.send(.hideDeleteAlert)
                 }
             } message: {
-                Text("Цю дію неможливо скасувати")
+                Text("This action cannot be undone")
             }
             .sheet(isPresented: viewStore.binding(
                 get: \.isShowingEditSheet,
@@ -348,9 +348,9 @@ struct EditWorkoutView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: Theme.Spacing.lg) {
-                    // Заголовок
+                    // Header
                     VStack(spacing: Theme.Spacing.sm) {
-                        Text("Редагувати тренування")
+                        Text("Edit Workout")
                             .font(Theme.Typography.title)
                             .foregroundColor(Theme.Palette.text)
                         
@@ -360,21 +360,21 @@ struct EditWorkoutView: View {
                     }
                     .padding(.top, Theme.Spacing.lg)
                     
-                    // Форма редагування
+                    // Edit form
                     VStack(spacing: Theme.Spacing.md) {
                     VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                        Text("Коментар")
+                        Text("Comment")
                             .font(Theme.Typography.headline)
                             .foregroundColor(Theme.Palette.text)
                         
-                        TextField("Додайте коментар...", text: $comment, axis: .vertical)
+                        TextField("Add comment...", text: $comment, axis: .vertical)
                             .textFieldStyle(.roundedBorder)
                             .lineLimit(3...6)
                     }
                     
                     HStack(spacing: Theme.Spacing.md) {
                         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                            Text("Калорії")
+                            Text("Calories")
                                 .font(Theme.Typography.headline)
                                 .foregroundColor(Theme.Palette.text)
                             
@@ -385,7 +385,7 @@ struct EditWorkoutView: View {
                         
                         if workout.sportType.hasSteps {
                             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                                Text("Кроки")
+                                Text("Steps")
                                     .font(Theme.Typography.headline)
                                     .foregroundColor(Theme.Palette.text)
                                 
@@ -396,10 +396,10 @@ struct EditWorkoutView: View {
                         }
                     }
                     
-                    // Дистанція (тільки для спорту з дистанцією)
+                    // Distance (only for sports with distance)
                     if workout.sportType.hasDistance {
                         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                            Text("Дистанція")
+                            Text("Distance")
                                 .font(Theme.Typography.headline)
                                 .foregroundColor(Theme.Palette.text)
                             
@@ -408,9 +408,9 @@ struct EditWorkoutView: View {
                                     .textFieldStyle(.roundedBorder)
                                     .keyboardType(.decimalPad)
                                 
-                                Picker("Одиниця", selection: $distanceUnit) {
-                                    Text("м").tag(DistanceUnit.meters)
-                                    Text("км").tag(DistanceUnit.kilometers)
+                                Picker("Unit", selection: $distanceUnit) {
+                                        Text("m").tag(DistanceUnit.meters)
+                                        Text("km").tag(DistanceUnit.kilometers)
                                 }
                                 .pickerStyle(.segmented)
                                 .frame(width: 80)
@@ -420,16 +420,16 @@ struct EditWorkoutView: View {
                     }
                     .padding(.horizontal, Theme.Spacing.lg)
                     
-                    // Кнопки
+                    // Buttons
                     VStack(spacing: Theme.Spacing.md) {
-                        Button("Зберегти зміни") {
+                        Button("Save Changes") {
                             saveChanges()
                         }
                         .buttonStyle(.borderedProminent)
                         .tint(Theme.Palette.primary)
                         .frame(maxWidth: .infinity)
                         
-                        Button("Скасувати") {
+                        Button("Cancel") {
                             onCancel()
                         }
                         .buttonStyle(.bordered)

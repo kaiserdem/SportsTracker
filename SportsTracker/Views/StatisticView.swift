@@ -9,13 +9,13 @@ struct StatisticView: View {
             NavigationView {
                 ScrollView {
                     VStack(spacing: Theme.Spacing.lg) {
-                        // Селектор періоду
+                        // Period selector
                         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                            Text("Період")
+                            Text("Period")
                                 .font(Theme.Typography.headline)
                                 .foregroundColor(Theme.Palette.text)
                             
-                            Picker("Період", selection: viewStore.binding(
+                            Picker("Period", selection: viewStore.binding(
                                 get: \.selectedPeriod,
                                 send: { .selectPeriod($0) }
                             )) {
@@ -27,9 +27,9 @@ struct StatisticView: View {
                         }
                         .padding(.horizontal, Theme.Spacing.md)
                         
-                        // Загальна статистика
+                        // General statistics
                         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                            Text("Загальна статистика")
+                            Text("General Statistics")
                                 .font(Theme.Typography.headline)
                                 .foregroundColor(Theme.Palette.text)
                             
@@ -43,7 +43,7 @@ struct StatisticView: View {
                                         .font(.largeTitle)
                                         .foregroundColor(Theme.Palette.textSecondary)
                                     
-                                    Text("Немає даних для відображення")
+                                    Text("No data to display")
                                         .font(Theme.Typography.body)
                                         .foregroundColor(Theme.Palette.textSecondary)
                                 }
@@ -58,33 +58,33 @@ struct StatisticView: View {
                                     GridItem(.flexible())
                                 ], spacing: Theme.Spacing.md) {
                                     StatisticCard(
-                                        title: "Активність",
+                                        title: "Activity",
                                         value: "\(viewStore.statistics.count)",
-                                        subtitle: "днів",
+                                        subtitle: "days",
                                         icon: "calendar",
                                         color: Theme.Palette.primary
                                     )
                                     
                                     StatisticCard(
-                                        title: "Час",
+                                        title: "Time",
                                         value: formatTotalDuration(viewStore.statistics),
-                                        subtitle: "годин",
+                                        subtitle: "hours",
                                         icon: "clock",
                                         color: Theme.Palette.accent
                                     )
                                     
                                     StatisticCard(
-                                        title: "Дистанція",
+                                        title: "Distance",
                                         value: String(format: "%.1f", totalDistance(viewStore.statistics)),
-                                        subtitle: "км",
+                                        subtitle: "km",
                                         icon: "location",
                                         color: Theme.Palette.secondary
                                     )
                                     
                                     StatisticCard(
-                                        title: "Калорії",
+                                        title: "Calories",
                                         value: "\(totalCalories(viewStore.statistics))",
-                                        subtitle: "ккал",
+                                        subtitle: "kcal",
                                         icon: "flame",
                                         color: Theme.Palette.secondary
                                     )
@@ -93,9 +93,9 @@ struct StatisticView: View {
                         }
                         .padding(.horizontal, Theme.Spacing.md)
                         
-                        // Детальна статистика
+                        // Detailed statistics
                         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                            Text("Детальна статистика")
+                            Text("Detailed Statistics")
                                 .font(Theme.Typography.headline)
                                 .foregroundColor(Theme.Palette.text)
                             
@@ -109,7 +109,7 @@ struct StatisticView: View {
                                         .font(.largeTitle)
                                         .foregroundColor(Theme.Palette.textSecondary)
                                     
-                                    Text("Немає даних для відображення")
+                                    Text("No data to display")
                                         .font(Theme.Typography.body)
                                         .foregroundColor(Theme.Palette.textSecondary)
                                 }
@@ -129,7 +129,7 @@ struct StatisticView: View {
                     .padding(.vertical, Theme.Spacing.lg)
                 }
                 .background(Theme.Gradients.screenBackground)
-                .navigationTitle("Статистика")
+                .navigationTitle("Statistics")
                 .navigationBarTitleDisplayMode(.large)
             }
             .onAppear {
@@ -194,22 +194,22 @@ struct StatisticDetailRow: View {
             
             HStack(spacing: Theme.Spacing.lg) {
                 StatisticItem(
-                    title: "Час",
+                    title: "Time",
                     value: formatDuration(statistic.totalDuration)
                 )
                 
                 StatisticItem(
-                    title: "Дистанція",
-                    value: String(format: "%.1f км", statistic.totalDistance)
+                    title: "Distance",
+                    value: String(format: "%.1f km", statistic.totalDistance)
                 )
                 
                 StatisticItem(
-                    title: "Швидкість",
-                    value: String(format: "%.1f км/год", statistic.averageSpeed)
+                    title: "Speed",
+                    value: String(format: "%.1f km/h", statistic.averageSpeed)
                 )
                 
                 StatisticItem(
-                    title: "Калорії",
+                    title: "Calories",
                     value: "\(statistic.calories)"
                 )
             }

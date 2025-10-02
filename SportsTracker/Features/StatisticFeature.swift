@@ -46,9 +46,9 @@ struct StatisticFeature: Reducer {
 }
 
 enum StatisticPeriod: String, CaseIterable {
-    case week = "Тиждень"
-    case month = "Місяць"
-    case year = "Рік"
+    case week = "Week"
+    case month = "Month"
+    case year = "Year"
 }
 
 struct StatisticData: Equatable, Identifiable {

@@ -9,9 +9,9 @@ struct MapView: View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             NavigationView {
                 ZStack {
-                    // Карта
+                    // Map
                     Map(coordinateRegion: .constant(MKCoordinateRegion(
-                        center: CLLocationCoordinate2D(latitude: 50.4501, longitude: 30.5234), // Київ
+                        center: CLLocationCoordinate2D(latitude: 50.4501, longitude: 30.5234), // Kyiv
                         span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
                     )), showsUserLocation: true, userTrackingMode: .none)
                     .ignoresSafeArea()
@@ -24,16 +24,16 @@ struct MapView: View {
                     VStack {
                         Spacer()
                         
-                        // Кнопки управління
+                        // Control buttons
                         HStack(spacing: Theme.Spacing.md) {
                             if viewStore.isTracking {
-                                Button("Зупинити") {
+                                Button("Stop") {
                                     viewStore.send(.stopTracking)
                                 }
                                 .buttonStyle(.borderedProminent)
                                 .tint(Theme.Palette.secondary)
                             } else {
-                                Button("Почати") {
+                                Button("Start") {
                                     viewStore.send(.startTracking)
                                 }
                                 .buttonStyle(.borderedProminent)
@@ -42,8 +42,8 @@ struct MapView: View {
                             
                             Spacer()
                             
-                            Button("Маршрути") {
-                                // Показати список маршрутів
+                            Button("Routes") {
+                                // Show routes list
                             }
                             .buttonStyle(.bordered)
                             .tint(Theme.Palette.accent)
@@ -52,12 +52,12 @@ struct MapView: View {
                         .padding(.bottom, Theme.Spacing.lg)
                     }
                     
-                    // Інформація про поточне тренування
+                    // Current workout info
                     if viewStore.isTracking, let route = viewStore.currentRoute {
                         VStack {
                             HStack {
                                 VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
-                                    Text("Поточне тренування")
+                                    Text("Current Workout")
                                         .font(Theme.Typography.caption)
                                         .foregroundColor(Theme.Palette.textSecondary)
                                     
@@ -69,11 +69,11 @@ struct MapView: View {
                                 Spacer()
                                 
                                 VStack(alignment: .trailing, spacing: Theme.Spacing.xs) {
-                                    Text("Дистанція")
+                                    Text("Distance")
                                         .font(Theme.Typography.caption)
                                         .foregroundColor(Theme.Palette.textSecondary)
                                     
-                                    Text(String(format: "%.2f км", route.totalDistance / 1000))
+                                    Text(String(format: "%.2f km", route.totalDistance / 1000))
                                         .font(Theme.Typography.title)
                                         .foregroundColor(Theme.Palette.text)
                                 }
@@ -89,12 +89,12 @@ struct MapView: View {
                         .padding(.horizontal, Theme.Spacing.md)
                     }
                 }
-                .navigationTitle("Карта")
+                .navigationTitle("Map")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("Налаштування") {
-                            // Показати налаштування
+                        Button("Settings") {
+                            // Show settings
                         }
                     }
                 }
