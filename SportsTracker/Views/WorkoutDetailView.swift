@@ -4,7 +4,6 @@ import ComposableArchitecture
 struct WorkoutDetailView: View {
     let store: StoreOf<WorkoutDetailFeature>
     @Environment(\.dismiss) private var dismiss
-    
     var body: some View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             NavigationView {
