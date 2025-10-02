@@ -10,7 +10,14 @@ struct CalendarView: View {
                 VStack(spacing: Theme.Spacing.lg) {
                     // Calendar
                     VStack(spacing: Theme.Spacing.md) {
-                        MonthlyCalendarView(days: viewStore.events)
+                        MonthlyCalendarView(
+                            days: viewStore.events,
+                            titleFontSize: 22,
+                            dayFontSize: 16,
+                            circleSize: 28,
+                            buttonSize: 40,
+                            weekdayFontSize: 16
+                        )
                         .padding()
                         .background(Theme.Palette.surface)
                         .cornerRadius(Theme.CornerRadius.medium)

@@ -482,7 +482,34 @@ struct MonthlyStatsView: View {
 struct MonthlyCalendarView: View {
     let days: [Day]
     
+    // Параметри розміру
+    let titleFontSize: CGFloat
+    let dayFontSize: CGFloat
+    let circleSize: CGFloat
+    let buttonSize: CGFloat
+    let weekdayFontSize: CGFloat
+    
     @State private var displayedDate = Date()
+    
+    // Ініціалізатор з параметрами за замовчуванням
+    init(days: [Day]) {
+        self.days = days
+        self.titleFontSize = 12
+        self.dayFontSize = 12
+        self.circleSize = 19
+        self.buttonSize = 28
+        self.weekdayFontSize = 10
+    }
+    
+    // Ініціалізатор з кастомними параметрами
+    init(days: [Day], titleFontSize: CGFloat = 12, dayFontSize: CGFloat = 12, circleSize: CGFloat = 19, buttonSize: CGFloat = 28, weekdayFontSize: CGFloat = 10) {
+        self.days = days
+        self.titleFontSize = titleFontSize
+        self.dayFontSize = dayFontSize
+        self.circleSize = circleSize
+        self.buttonSize = buttonSize
+        self.weekdayFontSize = weekdayFontSize
+    }
     
     private var calendar: Calendar {
         Calendar.current
@@ -544,7 +571,7 @@ struct MonthlyCalendarView: View {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 14, weight: .medium, design: .rounded))
                         .foregroundColor(Theme.Palette.primary)
-                        .frame(width: 28, height: 28)
+                        .frame(width: buttonSize, height: buttonSize)
                         .background(
                             Circle()
                                 .fill(Theme.Palette.primary.opacity(0.1))
@@ -556,12 +583,12 @@ struct MonthlyCalendarView: View {
                 // Назва місяця та року
                 HStack(spacing: 3) {
                     Text("\(currentMonth)")
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .font(.system(size: titleFontSize, weight: .medium, design: .rounded))
                         .foregroundColor(Theme.Palette.text)
                         .fontWeight(.medium)
                     
                     Text("\(currentYear)")
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .font(.system(size: titleFontSize, weight: .medium, design: .rounded))
                         .foregroundColor(Theme.Palette.textSecondary)
                 }
                 
@@ -576,7 +603,7 @@ struct MonthlyCalendarView: View {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 14, weight: .medium, design: .rounded))
                         .foregroundColor(Theme.Palette.primary)
-                        .frame(width: 28, height: 28)
+                        .frame(width: buttonSize, height: buttonSize)
                         .background(
                             Circle()
                                 .fill(Theme.Palette.primary.opacity(0.1))
@@ -588,7 +615,7 @@ struct MonthlyCalendarView: View {
             HStack(spacing: 2) {
                 ForEach(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], id: \.self) { day in
                     Text(day)
-                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                        .font(.system(size: weekdayFontSize, weight: .medium, design: .rounded))
                         .foregroundColor(Theme.Palette.textSecondary)
                         .frame(maxWidth: .infinity)
                         .minimumScaleFactor(0.5)
@@ -649,9 +676,9 @@ struct MonthlyCalendarView: View {
                     }()
                     
                     Text("\(day)")
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .font(.system(size: dayFontSize, weight: .medium, design: .rounded))
                         .foregroundColor(textColor)
-                        .frame(width: 19, height: 19)
+                        .frame(width: circleSize, height: circleSize)
                         .background(
                             Circle()
                                 .fill(dayColor)
