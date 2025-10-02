@@ -102,7 +102,7 @@ struct AddActivityFeature: Reducer {
                 
             case .saveActivity:
                 // Тут буде логіка збереження активності
-                print("💾 Збереження активності:")
+                print("💾 AddActivityFeature: Збереження активності:")
                 print("   Спорт: \(state.selectedSportType.rawValue)")
                 print("   Дата: \(state.selectedDate)")
                 print("   Час: \(state.startTime) - \(state.endTime)")
@@ -111,7 +111,8 @@ struct AddActivityFeature: Reducer {
                 print("   Калорії: \(state.calories)")
                 print("   Коментар: \(state.comment)")
                 
-                return .send(.dismiss)
+                // Дія буде оброблена в HomeFeature через .addActivity(.saveActivity)
+                return .none
                 
             case .dismiss:
                 return .none

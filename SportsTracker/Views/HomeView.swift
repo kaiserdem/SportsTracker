@@ -144,6 +144,7 @@ struct HomeView: View {
         }
     }
 }
+// MARK: - Quick Action Card
 
 struct QuickActionCard: View {
     let title: String
@@ -180,6 +181,8 @@ struct QuickActionCard: View {
         .disabled(action == nil)
     }
 }
+
+// MARK: - Active Workout Banner
 
 struct ActiveWorkoutBanner: View {
     let workout: ActiveWorkout
@@ -253,6 +256,8 @@ struct ActiveWorkoutBanner: View {
         .buttonStyle(PlainButtonStyle())
     }
 }
+
+// MARK: - Day Row
 
 struct DayRow: View {
     let day: Day
@@ -334,22 +339,30 @@ struct MonthlyStatsView: View {
         // Отримуємо початок поточного місяця
         let startOfMonth = calendar.dateInterval(of: .month, for: now)?.start ?? now
         
+        print("📊 MonthlyStatsView: === ПОТОЧНИЙ МІСЯЦЬ ===")
+        print("📊 MonthlyStatsView: Поточний час: \(now)")
+        print("📊 MonthlyStatsView: Початок місяця: \(startOfMonth)")
+        print("📊 MonthlyStatsView: Всього тренувань: \(days.count)")
+        
         // Фільтруємо тренування поточного місяця
         let filteredDays = days.filter { day in
-            day.date >= startOfMonth
+            let isInCurrentMonth = day.date >= startOfMonth
+            print("   - \(day.sportType.rawValue): \(day.date) >= \(startOfMonth) = \(isInCurrentMonth)")
+            return isInCurrentMonth
         }
         
-        //print("📊 MonthlyStatsView: Знайдено \(filteredDays.count) тренувань в поточному місяці")
+        print("📊 MonthlyStatsView: Знайдено \(filteredDays.count) тренувань в поточному місяці")
         for day in filteredDays {
             print("   - \(day.sportType.rawValue): \(day.duration) секунд, дистанція: \(day.distance ?? 0) м")
         }
+        print("📊 MonthlyStatsView: =========================")
         
         return filteredDays
     }
     
     private var monthlyDuration: TimeInterval {
         let totalDuration = currentMonthDays.reduce(0) { $0 + $1.duration }
-        //print("📊 MonthlyStatsView: Загальна тривалість: \(totalDuration) секунд")
+        print("📊 MonthlyStatsView: Загальна тривалість: \(totalDuration) секунд")
         return totalDuration
     }
     
@@ -371,14 +384,20 @@ struct MonthlyStatsView: View {
         let minutes = (totalSeconds % 3600) / 60
         let seconds = totalSeconds % 60
         
-        //print("📊 MonthlyStatsView: Форматування - totalSeconds: \(totalSeconds), hours: \(hours), minutes: \(minutes), seconds: \(seconds)")
+        print("📊 MonthlyStatsView: Форматування тривалості - totalSeconds: \(totalSeconds), hours: \(hours), minutes: \(minutes), seconds: \(seconds)")
         
         if hours > 0 {
-            return "\(hours)г:\(String(format: "%02d", minutes))хв:\(String(format: "%02d", seconds))с"
+            let result = "\(hours)г:\(String(format: "%02d", minutes))хв:\(String(format: "%02d", seconds))с"
+            print("📊 MonthlyStatsView: Результат форматування тривалості: \(result)")
+            return result
         } else if minutes > 0 {
-            return "\(minutes)хв:\(String(format: "%02d", seconds))с"
+            let result = "\(minutes)хв:\(String(format: "%02d", seconds))с"
+            print("📊 MonthlyStatsView: Результат форматування тривалості: \(result)")
+            return result
         } else {
-            return "\(seconds)с"
+            let result = "\(seconds)с"
+            print("📊 MonthlyStatsView: Результат форматування тривалості: \(result)")
+            return result
         }
     }
     

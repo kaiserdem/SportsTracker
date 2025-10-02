@@ -45,6 +45,15 @@ struct QuickStartView: View {
                 .background(Theme.Gradients.screenBackground)
                 .navigationTitle("Швидкий старт")
                 .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button("Назад") {
+                            print("🔙 QuickStartView: Натиснуто кнопку назад")
+                            viewStore.send(.hideQuickStart)
+                        }
+                        .foregroundColor(Theme.Palette.primary)
+                    }
+                }
                 
             }
             .onAppear {
