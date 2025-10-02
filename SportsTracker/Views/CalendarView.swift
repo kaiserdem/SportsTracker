@@ -195,7 +195,7 @@ struct CalendarMonthlyCalendarView: View {
             
             // Weekday headers
             HStack(spacing: 4) {
-                ForEach(["Пн","Вт","Ср","Чт","Пт","Сб","Нд"], id: \.self) { day in
+                ForEach(["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], id: \.self) { day in
                     Text(day)
                         .font(.system(size: 12, weight: .semibold, design: .rounded))
                         .foregroundColor(Theme.Palette.textSecondary)
