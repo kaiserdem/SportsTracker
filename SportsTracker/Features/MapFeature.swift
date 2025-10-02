@@ -23,6 +23,7 @@ struct MapFeature {
         case updateLocation(CLLocation)
         case loadRoutes
         case routesLoaded([Route])
+        case goToHomeScreen
     }
     
     @Dependency(\.locationManager) var locationManager
@@ -79,6 +80,10 @@ struct MapFeature {
             case let .routesLoaded(routes):
                 state.routes = routes
                 state.isLoading = false
+                return .none
+                
+            case .goToHomeScreen:
+                // Цей action буде оброблятися в AppFeature, тут просто повертаємо none
                 return .none
             }
         }

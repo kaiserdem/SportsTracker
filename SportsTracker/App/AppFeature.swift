@@ -65,6 +65,11 @@ struct AppFeature: Reducer {
             case .statistic:
                 return .none
                     
+            case .map(.goToHomeScreen):
+                print("📥 AppFeature: Отримав goToHomeScreen з MapFeature, переключаю на головний екран")
+                state.selectedTab = .home
+                return .none
+                
             case .map:
                 return .none
                 
