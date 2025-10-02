@@ -7,6 +7,8 @@ struct HomeFeature: Reducer {
         var recentDays: [Day] = []
         var isLoading = false
         var workout = WorkoutFeature.State()
+        var addActivity = AddActivityFeature.State()
+        var isShowingAddActivity = false
     }
     
     enum Action: Equatable {
@@ -19,11 +21,18 @@ struct HomeFeature: Reducer {
         case coreDataError(CoreDataError)
         case workout(WorkoutFeature.Action)
         case showWorkoutDetail(UUID)
+        case showAddActivity
+        case addActivity(AddActivityFeature.Action)
+        case dismissAddActivity
     }
     
     var body: some Reducer<State, Action> {
         Scope(state: \.workout, action: /Action.workout) {
             WorkoutFeature()
+        }
+        
+        Scope(state: \.addActivity, action: /Action.addActivity) {
+            AddActivityFeature()
         }
         
         Reduce { state, action in
@@ -79,6 +88,46 @@ struct HomeFeature: Reducer {
             case let .showWorkoutDetail(workoutId):
                 // Передаємо дію вгору до AppFeature
                 print("📤 HomeFeature: Передаю showWorkoutDetail з ID: \(workoutId)")
+                return .none
+                
+            case .showAddActivity:
+                state.isShowingAddActivity = true
+                return .none
+                
+            case .addActivity(.dismiss), .dismissAddActivity:
+                state.isShowingAddActivity = false
+                return .none
+                
+            case .addActivity(.saveActivity):
+                // Створюємо новий Day з даних форми
+                let calendar = Calendar.current
+                let combinedDate = calendar.date(bySettingHour: calendar.component(.hour, from: state.addActivity.startTime),
+                                               minute: calendar.component(.minute, from: state.addActivity.startTime),
+                                               second: 0,
+                                               of: state.addActivity.selectedDate) ?? state.addActivity.selectedDate
+                
+                let newDay = Day(
+                    date: combinedDate,
+                    sportType: state.addActivity.selectedSportType,
+                    comment: state.addActivity.comment.isEmpty ? nil : state.addActivity.comment,
+                    duration: state.addActivity.calculatedDurationInSeconds,
+                    distance: state.addActivity.calculatedDistanceInMeters > 0 ? state.addActivity.calculatedDistanceInMeters : nil,
+                    steps: nil,
+                    calories: state.addActivity.calories > 0 ? state.addActivity.calories : nil,
+                    supplements: nil
+                )
+                
+                print("💾 HomeFeature: Створюю нову активність:")
+                print("   Спорт: \(newDay.sportType.rawValue)")
+                print("   Дата: \(newDay.date)")
+                print("   Тривалість: \(newDay.duration) секунд")
+                print("   Дистанція: \(newDay.distance ?? 0) метрів")
+                print("   Калорії: \(newDay.calories ?? 0)")
+                
+                state.isShowingAddActivity = false
+                return .send(.saveDay(newDay))
+                
+            case .addActivity:
                 return .none
             }
         }

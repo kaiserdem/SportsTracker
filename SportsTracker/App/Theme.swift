@@ -75,7 +75,7 @@ struct Theme {
         
         // Градієнт для фону екранів
         static let screenBackground = LinearGradient(
-            colors: [Palette.lightBlueGrey, Palette.mediumBlueGrey],
+            colors: [Palette.background, Palette.lightBlueGrey.opacity(0.3)],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )

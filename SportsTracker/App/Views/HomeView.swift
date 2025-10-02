@@ -51,7 +51,9 @@ struct HomeView: View {
                                     title: "Додати активність",
                                     icon: "plus.circle.fill",
                                     color: Theme.Palette.accent
-                                )
+                                ) {
+                                    viewStore.send(.showAddActivity)
+                                }
                                 
                                 QuickActionCard(
                                     title: "Переглянути статистику",
@@ -112,6 +114,17 @@ struct HomeView: View {
                     store: self.store.scope(
                         state: \.workout,
                         action: { .workout($0) }
+                    )
+                )
+            }
+            .sheet(isPresented: viewStore.binding(
+                get: \.isShowingAddActivity,
+                send: HomeFeature.Action.dismissAddActivity
+            )) {
+                AddActivityView(
+                    store: self.store.scope(
+                        state: \.addActivity,
+                        action: HomeFeature.Action.addActivity
                     )
                 )
             }

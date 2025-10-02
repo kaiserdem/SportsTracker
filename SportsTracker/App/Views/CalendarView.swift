@@ -10,10 +10,10 @@ struct CalendarView: View {
                 VStack(spacing: Theme.Spacing.lg) {
                     // Календар
                     VStack(spacing: Theme.Spacing.md) {
-                        Text("Календар тренувань")
-                            .font(Theme.Typography.headline)
-                            .foregroundColor(Theme.Palette.text)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+//                        Text("Календар тренувань")
+//                            .font(Theme.Typography.headline)
+//                            .foregroundColor(Theme.Palette.text)
+//                            .frame(maxWidth: .infinity, alignment: .leading)
                         
                         DatePicker(
                             "Оберіть дату",
