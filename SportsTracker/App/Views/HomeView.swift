@@ -441,7 +441,7 @@ struct MonthlyStatsView: View {
             // 1. Назва
             
             // 2. Форматована тривалість з HStack компонентами
-            HStack(spacing: Theme.Spacing.sm) {
+            HStack(spacing: 8) {
                 // Дні (показуємо тільки якщо є)
                 if daysCount > 0 {
                     VStack(spacing: 4) {
@@ -452,6 +452,11 @@ struct MonthlyStatsView: View {
                             .font(.system(size: 12, weight: .medium, design: .rounded))
                             .foregroundColor(Theme.Palette.textSecondary)
                     }
+                    
+                    Text(":")
+                        .font(.system(size: 32, weight: .bold, design: .rounded))
+                        .foregroundColor(Theme.Palette.primary)
+                        .offset(y: -12)
                 }
                 
                 // Години
@@ -464,6 +469,11 @@ struct MonthlyStatsView: View {
                         .foregroundColor(Theme.Palette.textSecondary)
                 }
                 
+                Text(":")
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .foregroundColor(Theme.Palette.primary)
+                    .offset(y: -12)
+                
                 // Хвилини
                 VStack(spacing: 4) {
                     Text("\(minutesCount)")
@@ -473,6 +483,11 @@ struct MonthlyStatsView: View {
                         .font(.system(size: 12, weight: .medium, design: .rounded))
                             .foregroundColor(Theme.Palette.textSecondary)
                 }
+                
+                Text(":")
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .foregroundColor(Theme.Palette.primary)
+                    .offset(y: -12)
                 
                 // Секунди
                 if secondsCount > 0 {
@@ -484,8 +499,16 @@ struct MonthlyStatsView: View {
                             .font(.system(size: 12, weight: .medium, design: .rounded))
                             .foregroundColor(Theme.Palette.textSecondary)
                     }
+                } else {
+                    Text(":")
+                        .font(.system(size: 32, weight: .bold, design: .rounded))
+                        .foregroundColor(Theme.Palette.primary)
+                        .offset(y: -12)
                 }
             }
+            .minimumScaleFactor(0.5)
+            .lineLimit(1)
+            .frame(maxWidth: .infinity)
             
             // 3. Назва "Duration"
             Text("Duration")
