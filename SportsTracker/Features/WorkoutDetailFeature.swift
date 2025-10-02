@@ -26,7 +26,6 @@ struct WorkoutDetailFeature: Reducer {
         case showDeleteAlert
         case hideDeleteAlert
         case confirmDelete
-        case workoutDeleted
         case hideActiveWorkout
         case dismissError
         case notifyWorkoutDeleted
@@ -110,21 +109,35 @@ struct WorkoutDetailFeature: Reducer {
                 return .none
                 
             case .confirmDelete:
-                guard let workout = state.workout else { return .none }
+                guard let workout = state.workout else { 
+                    print("❌ WorkoutDetailFeature: confirmDelete - workout is nil")
+                    return .none 
+                }
                 print("🗑️ WorkoutDetailFeature: Підтверджую видалення тренування:")
                 print("   - ID: \(workout.id)")
                 print("   - SportType: \(workout.sportType.rawValue)")
                 state.isShowingDeleteAlert = false
-                return CoreDataEffects.deleteDay(workout)
-                    .map { _ in 
-                        print("✅ WorkoutDetailFeature: Тренування видалено з БД, відправляю workoutDeleted")
-                        return .workoutDeleted 
-                    }
                 
-            case .workoutDeleted:
-                print("📤 WorkoutDetailFeature: Відправляю notifyWorkoutDeleted")
-                // Повідомляємо про видалення, щоб оновити список
-                return .send(.notifyWorkoutDeleted)
+                // Просто видаляємо з Core Data і відправляємо повідомлення
+                return .run { send in
+                    do {
+                        let context = await MainActor.run { PersistenceController.shared.container.viewContext }
+                        let request = NSFetchRequest<DayEntity>(entityName: "DayEntity")
+                        request.predicate = NSPredicate(format: "id == %@", workout.id as CVarArg)
+                        
+                        if let entity = try context.fetch(request).first {
+                            print("✅ WorkoutDetailFeature: Знайдено entity для видалення")
+                            context.delete(entity)
+                            try context.save()
+                            print("✅ WorkoutDetailFeature: Успішно видалено тренування з Core Data")
+                            await send(.notifyWorkoutDeleted)
+                        } else {
+                            print("❌ WorkoutDetailFeature: Тренування з ID \(workout.id) не знайдено")
+                        }
+                    } catch {
+                        print("❌ WorkoutDetailFeature: Помилка видалення: \(error)")
+                    }
+                }
                 
             case .notifyWorkoutDeleted:
                 print("📤 WorkoutDetailFeature: notifyWorkoutDeleted отримано, передаю в AppFeature")

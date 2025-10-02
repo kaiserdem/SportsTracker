@@ -107,7 +107,7 @@ struct AppView: View {
             }
             .sheet(item: viewStore.binding(
                 get: { 
-                    //print("🔄 AppView: Перевіряю workoutDetail: \($0.workoutDetail?.id.uuidString ?? "nil")")
+                    print("🔄 AppView: Перевіряю workoutDetail: \($0.workoutDetail?.id.uuidString ?? "nil")")
                     return $0.workoutDetail 
                 },
                 send: { _ in 

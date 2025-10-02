@@ -113,6 +113,8 @@ extension CoreDataManager: DependencyKey {
                         context.delete(entity)
                         try context.save()
                         print("✅ CoreDataManager: Успішно видалено тренування з Core Data")
+                        print("✅ CoreDataManager: Ефект завершується успішно")
+                        // Ефект завершується успішно автоматично
                     } else {
                         print("❌ CoreDataManager: Тренування з ID \(day.id) не знайдено для видалення")
                         await send(.deleteError("Day not found"))
