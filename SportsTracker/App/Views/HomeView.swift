@@ -33,7 +33,7 @@ struct HomeView: View {
                                 .frame(maxWidth: .infinity)
                             
                             // Календар
-                            MonthlyCalendarView(days: viewStore.recentDays)
+                            MonthlyCalendarView(days: viewStore.allDays)
                                 .frame(maxWidth: .infinity)
                         }
                         .padding(.horizontal, Theme.Spacing.md)

@@ -6,6 +6,7 @@ struct HomeFeature: Reducer {
     struct State: Equatable {
         var welcomeMessage = "Ласкаво просимо до SportsTracker!"
         var recentDays: [Day] = []
+        var allDays: [Day] = [] // Всі події для календаря
         var isLoading = false
         var workout = WorkoutFeature.State()
         var addActivity = AddActivityFeature.State()
@@ -50,7 +51,10 @@ struct HomeFeature: Reducer {
             case let .daysLoaded(days):
                 print("📋 HomeFeature: Завантажено \(days.count) тренувань:")
                 
-                // Фільтруємо тільки минулі та сьогоднішні активності
+                // Зберігаємо всі події для календаря
+                state.allDays = days
+                
+                // Фільтруємо тільки минулі та сьогоднішні активності для списку
                 let calendar = Calendar.current
                 let today = calendar.startOfDay(for: Date())
                 let filteredDays = days.filter { day in
