@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import CoreData
 
 struct HomeFeature: Reducer {
     struct State: Equatable {
@@ -63,8 +64,27 @@ struct HomeFeature: Reducer {
                 return .none
                 
             case let .saveDay(day):
-                return CoreDataEffects.saveDay(day)
-                    .map { _ in .loadRecentActivities }
+                return .run { send in
+                    do {
+                        let context = await MainActor.run { PersistenceController.shared.container.viewContext }
+                        let dayEntity = DayEntity(context: context)
+                        
+                        dayEntity.id = day.id
+                        dayEntity.date = day.date
+                        dayEntity.sportType = day.sportType.rawValue
+                        dayEntity.comment = day.comment
+                        dayEntity.duration = day.duration
+                        dayEntity.steps = Int32(day.steps ?? 0)
+                        dayEntity.calories = Int32(day.calories ?? 0)
+                        dayEntity.distance = day.distance ?? 0
+                        
+                        try context.save()
+                        print("✅ HomeFeature: Успішно збережено тренування")
+                        await send(.loadRecentActivities)
+                    } catch {
+                        print("❌ HomeFeature: Помилка збереження: \(error)")
+                    }
+                }
                 
             case let .deleteDay(day):
                 return CoreDataEffects.deleteDay(day)

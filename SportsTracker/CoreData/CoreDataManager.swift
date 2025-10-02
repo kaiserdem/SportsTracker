@@ -50,7 +50,9 @@ extension CoreDataManager: DependencyKey {
                     }
                     
                     try context.save()
+                    print("✅ CoreDataManager: Успішно збережено тренування")
                 } catch {
+                    print("❌ CoreDataManager: Помилка збереження: \(error)")
                     await send(.saveError(error.localizedDescription))
                 }
             }
