@@ -21,7 +21,6 @@ struct WorkoutDetailFeature: Reducer {
         case showEditSheet
         case hideEditSheet
         case updateWorkout(Day)
-        case workoutUpdated
         case deleteWorkout
         case showDeleteAlert
         case hideDeleteAlert
@@ -81,15 +80,30 @@ struct WorkoutDetailFeature: Reducer {
                 print("   - Distance: \(updatedWorkout.distance ?? 0) м")
                 state.workout = updatedWorkout
                 state.isShowingEditSheet = false
-                return CoreDataEffects.updateDay(updatedWorkout)
-                    .map { _ in 
-                        print("✅ WorkoutDetailFeature: Тренування оновлено в БД, відправляю workoutUpdated")
-                        return .workoutUpdated 
-                    }
                 
-            case .workoutUpdated:
-                print("📤 WorkoutDetailFeature: Відправляю notifyWorkoutUpdated")
-                return .send(.notifyWorkoutUpdated)
+                return .run { send in
+                    do {
+                        let context = await MainActor.run { PersistenceController.shared.container.viewContext }
+                        let request = NSFetchRequest<DayEntity>(entityName: "DayEntity")
+                        request.predicate = NSPredicate(format: "id == %@", updatedWorkout.id as CVarArg)
+                        
+                        if let entity = try context.fetch(request).first {
+                            print("✅ WorkoutDetailFeature: Знайдено entity для оновлення")
+                            entity.distance = updatedWorkout.distance ?? 0
+                            entity.comment = updatedWorkout.comment
+                            entity.calories = Int32(updatedWorkout.calories ?? 0)
+                            entity.steps = Int32(updatedWorkout.steps ?? 0)
+                            
+                            try context.save()
+                            print("✅ WorkoutDetailFeature: Успішно оновлено тренування в Core Data")
+                            await send(.notifyWorkoutUpdated)
+                        } else {
+                            print("❌ WorkoutDetailFeature: Тренування з ID \(updatedWorkout.id) не знайдено")
+                        }
+                    } catch {
+                        print("❌ WorkoutDetailFeature: Помилка оновлення: \(error)")
+                    }
+                }
                 
             case .notifyWorkoutUpdated:
                 print("📤 WorkoutDetailFeature: notifyWorkoutUpdated отримано, передаю в AppFeature")
