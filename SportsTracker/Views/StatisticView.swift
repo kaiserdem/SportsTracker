@@ -35,20 +35,48 @@ struct StatisticView: View {
                                     .frame(maxWidth: .infinity)
                                     .padding()
                             } else if viewStore.statistics.isEmpty {
-                                VStack(spacing: Theme.Spacing.sm) {
+                                VStack(spacing: Theme.Spacing.lg) {
                                     Image(systemName: "chart.bar.xaxis")
-                                        .font(.largeTitle)
-                                        .foregroundColor(Theme.Palette.textSecondary)
+                                        .font(.system(size: 60, weight: .light))
+                                        .foregroundColor(.white)
+                                        .padding(.bottom, Theme.Spacing.sm)
                                     
-                                    Text("No data to display")
-                                        .font(Theme.Typography.body)
-                                        .foregroundColor(Theme.Palette.textSecondary)
+                                    VStack(spacing: Theme.Spacing.sm) {
+                                        Text("No data yet")
+                                            .font(.system(size: 24, weight: .semibold, design: .rounded))
+                                            .foregroundColor(.white)
+                                        
+                                        Text("Start tracking your activities\nto see statistics here")
+                                            .font(.system(size: 16, weight: .regular, design: .rounded))
+                                            .foregroundColor(.white.opacity(0.8))
+                                            .multilineTextAlignment(.center)
+                                    }
+                                    
+                                    Button(action: {
+                                        // TODO: Navigate to add activity
+                                        print("📊 Натиснуто кнопку додати активність з статистики")
+                                    }) {
+                                        HStack(spacing: 12) {
+                                            Image(systemName: "plus.circle.fill")
+                                                .font(.system(size: 20, weight: .medium))
+                                            
+                                            Text("Add Your First Activity")
+                                                .font(.system(size: 16, weight: .semibold, design: .rounded))
+                                        }
+                                        .foregroundColor(Theme.Palette.coral)
+                                        .frame(maxWidth: .infinity)
+                                        .frame(height: 45)
+                                        .background(.white)
+                                        .cornerRadius(22)
+                                        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+                                    }
+                                    .buttonStyle(.plain)
                                 }
                                 .frame(maxWidth: .infinity)
                                 .padding(Theme.Spacing.xl)
-                                .background(Theme.Palette.surface)
-                                .cornerRadius(Theme.CornerRadius.medium)
-                                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                                .background(Theme.Gradients.tealCoral)
+                                .cornerRadius(Theme.CornerRadius.large)
+                                .shadow(color: Theme.Palette.coral.opacity(0.3), radius: 12, x: 0, y: 6)
                             } else {
                                 LazyVGrid(columns: [
                                     GridItem(.flexible()),
@@ -101,20 +129,48 @@ struct StatisticView: View {
                                     .frame(maxWidth: .infinity)
                                     .padding()
                             } else if viewStore.statistics.isEmpty {
-                                VStack(spacing: Theme.Spacing.sm) {
-                                    Image(systemName: "chart.bar.xaxis")
-                                        .font(.largeTitle)
-                                        .foregroundColor(Theme.Palette.textSecondary)
+                                VStack(spacing: Theme.Spacing.lg) {
+                                    Image(systemName: "chart.line.uptrend.xyaxis")
+                                        .font(.system(size: 60, weight: .light))
+                                        .foregroundColor(.white)
+                                        .padding(.bottom, Theme.Spacing.sm)
                                     
-                                    Text("No data to display")
-                                        .font(Theme.Typography.body)
-                                        .foregroundColor(Theme.Palette.textSecondary)
+                                    VStack(spacing: Theme.Spacing.sm) {
+                                        Text("Keep going!")
+                                            .font(.system(size: 24, weight: .semibold, design: .rounded))
+                                            .foregroundColor(.white)
+                                        
+                                        Text("Detailed statistics will appear\nas you track more activities")
+                                            .font(.system(size: 16, weight: .regular, design: .rounded))
+                                            .foregroundColor(.white.opacity(0.8))
+                                            .multilineTextAlignment(.center)
+                                    }
+                                    
+                                    Button(action: {
+                                        // TODO: Navigate to add activity
+                                        print("📊 Натиснуто кнопку з детальної статистики")
+                                    }) {
+                                        HStack(spacing: 12) {
+                                            Image(systemName: "plus.circle.fill")
+                                                .font(.system(size: 20, weight: .medium))
+                                            
+                                            Text("Track Another Activity")
+                                                .font(.system(size: 16, weight: .semibold, design: .rounded))
+                                        }
+                                        .foregroundColor(Theme.Palette.coral)
+                                        .frame(maxWidth: .infinity)
+                                        .frame(height: 45)
+                                        .background(.white)
+                                        .cornerRadius(22)
+                                        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+                                    }
+                                    .buttonStyle(.plain)
                                 }
                                 .frame(maxWidth: .infinity)
                                 .padding(Theme.Spacing.xl)
-                                .background(Theme.Palette.surface)
-                                .cornerRadius(Theme.CornerRadius.medium)
-                                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                                .background(Theme.Gradients.tealCoral)
+                                .cornerRadius(Theme.CornerRadius.large)
+                                .shadow(color: Theme.Palette.coral.opacity(0.3), radius: 12, x: 0, y: 6)
                             } else {
                                 ForEach(viewStore.statistics) { statistic in
                                     StatisticDetailRow(statistic: statistic)

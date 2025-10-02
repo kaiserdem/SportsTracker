@@ -104,13 +104,22 @@ struct HomeView: View {
                                         print("🔘 HomeView: Натиснуто 'Add Workout' кнопку")
                                         viewStore.send(.showAddActivity)
                                     }) {
-                                        Text("Add Workout")
-                                            .font(.system(size: 16, weight: .medium, design: .rounded))
+                                        HStack(spacing: 16) {
+                                            Image(systemName: "plus.circle.fill")
+                                                .font(.system(size: 24, weight: .medium, design: .rounded))
+                                            
+                                            Text("Add Workout")
+                                                .font(.system(size: 22, weight: .semibold, design: .rounded))
+                                        }
+                                        .foregroundColor(.white)
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 16)
+                                        .background(Theme.Gradients.tealCoral)
+                                        .cornerRadius(25)
+                                        .shadow(color: Theme.Palette.coral.opacity(0.4), radius: 8, x: 0, y: 4)
                                     }
-                                    
-                                    .buttonStyle(.borderedProminent)
-                                    .tint(Theme.Palette.primary)
-                                    .controlSize(.small)
+                                    .frame(height: 35)
+                                    .buttonStyle(.plain)
                                 }
                             } else {
                                 ForEach(viewStore.recentDays) { day in

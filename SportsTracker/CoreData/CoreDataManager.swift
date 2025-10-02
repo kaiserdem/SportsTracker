@@ -60,41 +60,30 @@ extension CoreDataManager: DependencyKey {
         
         fetchDays: {
             .run { send in
-                do {
-                    let context = await MainActor.run { PersistenceController.shared.container.viewContext }
-                    let request = NSFetchRequest<DayEntity>(entityName: "DayEntity")
-                    request.sortDescriptors = [NSSortDescriptor(keyPath: \DayEntity.date, ascending: false)]
-                    
-                    let entities = try context.fetch(request)
-                    let days = await withTaskGroup(of: Day?.self) { group in
-                        var results: [Day] = []
+                await MainActor.run {
+                    do {
+                        print("📋 CoreDataManager: Отримую всі тренування...")
+                        let context = PersistenceController.shared.container.viewContext
+                        let request = NSFetchRequest<DayEntity>(entityName: "DayEntity")
+                        request.sortDescriptors = [NSSortDescriptor(keyPath: \DayEntity.date, ascending: false)]
                         
-                        for entity in entities {
-                            let entityId = entity.objectID
-                            group.addTask { @Sendable in
-                                return await MainActor.run {
-                                    let context = PersistenceController.shared.container.viewContext
-                                    guard let entity = try? context.existingObject(with: entityId) as? DayEntity else {
-                                        return nil
-                                    }
-                                    return Self.convertEntityToDay(entity)
-                                }
-                            }
+                        let entities = try context.fetch(request)
+                        print("📋 CoreDataManager: Знайдено \(entities.count) entities")
+                        
+                        let days = entities.compactMap { entity in
+                            Self.convertEntityToDay(entity)
                         }
                         
-                        for await result in group {
-                            if let day = result {
-                                results.append(day)
-                            }
+                        print("📋 CoreDataManager: Конвертовано \(days.count) тренувань")
+                        Task.detached {
+                            await send(days)
                         }
-                        
-                        return results
+                    } catch {
+                        print("❌ CoreDataManager: Помилка отримання тренувань: \(error)")
+                        Task.detached {
+                            await send([])
+                        }
                     }
-                    
-                    await send(days)
-                } catch {
-                    // Для fetchDays не повертаємо помилку, повертаємо порожній масив
-                    await send([])
                 }
             }
         },
@@ -192,82 +181,62 @@ extension CoreDataManager: DependencyKey {
         
         fetchDaysInRange: { startDate, endDate in
             .run { send in
-                do {
-                    let context = await MainActor.run { PersistenceController.shared.container.viewContext }
-                    let request = NSFetchRequest<DayEntity>(entityName: "DayEntity")
-                    request.predicate = NSPredicate(format: "date >= %@ AND date <= %@", startDate as NSDate, endDate as NSDate)
-                    request.sortDescriptors = [NSSortDescriptor(keyPath: \DayEntity.date, ascending: false)]
-                    
-                    let entities = try context.fetch(request)
-                    let days = await withTaskGroup(of: Day?.self) { group in
-                        var results: [Day] = []
+                await MainActor.run {
+                    do {
+                        print("📋 CoreDataManager: Отримую тренування в діапазоні...")
+                        let context = PersistenceController.shared.container.viewContext
+                        let request = NSFetchRequest<DayEntity>(entityName: "DayEntity")
+                        request.predicate = NSPredicate(format: "date >= %@ AND date <= %@", startDate as NSDate, endDate as NSDate)
+                        request.sortDescriptors = [NSSortDescriptor(keyPath: \DayEntity.date, ascending: false)]
                         
-                        for entity in entities {
-                            let entityId = entity.objectID
-                            group.addTask { @Sendable in
-                                return await MainActor.run {
-                                    let context = PersistenceController.shared.container.viewContext
-                                    guard let entity = try? context.existingObject(with: entityId) as? DayEntity else {
-                                        return nil
-                                    }
-                                    return Self.convertEntityToDay(entity)
-                                }
-                            }
+                        let entities = try context.fetch(request)
+                        print("📋 CoreDataManager: Знайдено \(entities.count) entities в діапазоні")
+                        
+                        let days = entities.compactMap { entity in
+                            Self.convertEntityToDay(entity)
                         }
                         
-                        for await result in group {
-                            if let day = result {
-                                results.append(day)
-                            }
+                        print("📋 CoreDataManager: Конвертовано \(days.count) тренувань в діапазоні")
+                        Task.detached {
+                            await send(days)
                         }
-                        
-                        return results
+                    } catch {
+                        print("❌ CoreDataManager: Помилка отримання тренувань в діапазоні: \(error)")
+                        Task.detached {
+                            await send([])
+                        }
                     }
-                    
-                    await send(days)
-                } catch {
-                    await send([])
                 }
             }
         },
         
         fetchDaysBySportType: { sportType in
             .run { send in
-                do {
-                    let context = await MainActor.run { PersistenceController.shared.container.viewContext }
-                    let request = NSFetchRequest<DayEntity>(entityName: "DayEntity")
-                    request.predicate = NSPredicate(format: "sportType == %@", sportType.rawValue)
-                    request.sortDescriptors = [NSSortDescriptor(keyPath: \DayEntity.date, ascending: false)]
-                    
-                    let entities = try context.fetch(request)
-                    let days = await withTaskGroup(of: Day?.self) { group in
-                        var results: [Day] = []
+                await MainActor.run {
+                    do {
+                        print("📋 CoreDataManager: Отримую тренування для типу спорту \(sportType.rawValue)...")
+                        let context = PersistenceController.shared.container.viewContext
+                        let request = NSFetchRequest<DayEntity>(entityName: "DayEntity")
+                        request.predicate = NSPredicate(format: "sportType == %@", sportType.rawValue)
+                        request.sortDescriptors = [NSSortDescriptor(keyPath: \DayEntity.date, ascending: false)]
                         
-                        for entity in entities {
-                            let entityId = entity.objectID
-                            group.addTask { @Sendable in
-                                return await MainActor.run {
-                                    let context = PersistenceController.shared.container.viewContext
-                                    guard let entity = try? context.existingObject(with: entityId) as? DayEntity else {
-                                        return nil
-                                    }
-                                    return Self.convertEntityToDay(entity)
-                                }
-                            }
+                        let entities = try context.fetch(request)
+                        print("📋 CoreDataManager: Знайдено \(entities.count) entities для \(sportType.rawValue)")
+                        
+                        let days = entities.compactMap { entity in
+                            Self.convertEntityToDay(entity)
                         }
                         
-                        for await result in group {
-                            if let day = result {
-                                results.append(day)
-                            }
+                        print("📋 CoreDataManager: Конвертовано \(days.count) тренувань для \(sportType.rawValue)")
+                        Task.detached {
+                            await send(days)
                         }
-                        
-                        return results
+                    } catch {
+                        print("❌ CoreDataManager: Помилка отримання тренувань за типом спорту: \(error)")
+                        Task.detached {
+                            await send([])
+                        }
                     }
-                    
-                    await send(days)
-                } catch {
-                    await send([])
                 }
             }
         },
