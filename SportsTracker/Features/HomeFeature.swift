@@ -149,7 +149,7 @@ struct HomeFeature: Reducer {
                     duration: state.addActivity.calculatedDurationInSeconds,
                     distance: state.addActivity.calculatedDistanceInMeters > 0 ? state.addActivity.calculatedDistanceInMeters : nil,
                     steps: nil,
-                    calories: state.addActivity.calories > 0 ? state.addActivity.calories : nil,
+                    calories: state.addActivity.calories,
                     supplements: nil
                 )
                 

@@ -45,13 +45,11 @@ struct WorkoutDetailView: View {
                                         icon: "location"
                                     )
                                     
-                                    if let calories = workout.calories {
-                                        DetailStatisticItem(
-                                            title: "Calories",
-                                            value: "\(calories)",
-                                            icon: "flame"
-                                        )
-                                    }
+                                    DetailStatisticItem(
+                                        title: "Calories",
+                                        value: "\(workout.calories ?? 0)",
+                                        icon: "flame"
+                                    )
                                 }
                             }
                             .padding(Theme.Spacing.lg)
@@ -66,6 +64,12 @@ struct WorkoutDetailView: View {
                                     .foregroundColor(Theme.Palette.text)
                                 
                                 VStack(spacing: Theme.Spacing.sm) {
+                                    DetailRow(
+                                        title: "Calories",
+                                        value: "\(workout.calories ?? 0)",
+                                        icon: "flame"
+                                    )
+                                    
                                     if let steps = workout.steps, !workout.sportType.hasSteps {
                                         DetailRow(
                                             title: "Steps",
