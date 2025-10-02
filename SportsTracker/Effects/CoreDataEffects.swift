@@ -101,10 +101,25 @@ struct StatisticsEffects {
                     let totalSteps = days.reduce(0) { $0 + ($1.steps ?? 0) }
                     let averageSpeed = totalDuration > 0 ? Double(totalSteps) / (totalDuration / 3600) : 0
                     
+                    // Рахуємо реальну дистанцію з GPS даних та кроків як fallback
+                    let totalDistance = days.reduce(0) { sum, day in
+                        if let gpsDistance = day.distance, gpsDistance > 0 {
+                            print("📈 Використовую GPS дистанцію: \(gpsDistance)m для \(sportType.rawValue)")
+                            return sum + gpsDistance
+                        } else if let steps = day.steps, steps > 0 {
+                            let calculatedDistance = Double(steps) * 0.0008
+                            print("📈 Використовую розрахунок з кроків: \(steps) кроків = \(calculatedDistance)m для \(sportType.rawValue)")
+                            return sum + calculatedDistance // Fallback: приблизно 0.8м на крок
+                        } else {
+                            print("📈 Немає даних для дистанції для \(sportType.rawValue)")
+                        }
+                        return sum
+                    }
+                    
                     let data = StatisticData(
                         type: sportType,
                         totalDuration: totalDuration,
-                        totalDistance: Double(totalSteps) * 0.0008, // Приблизно 0.8м на крок
+                        totalDistance: totalDistance,
                         averageSpeed: averageSpeed,
                         calories: totalCalories
                     )
@@ -201,7 +216,15 @@ struct WorkoutEffects {
                 let totalDuration = days.reduce(0) { $0 + $1.duration }
                 
                 print("🏃 Рахую загальну дистанцію...")
-                let totalDistance = days.reduce(0) { $0 + Double($1.steps ?? 0) * 0.0008 } // Приблизно 0.8м на крок
+                let totalDistance = days.reduce(0) { sum, day in
+                    if let gpsDistance = day.distance, gpsDistance > 0 {
+                        print("🏃 GPS дистанція: \(gpsDistance)m")
+                        return sum + gpsDistance
+                    } else {
+                        print("🏃 Відсутня GPS дистанція для тренування")
+                        return sum
+                    }
+                }
                 
                 print("🏃 Рахую калорії та групування...")
                 let totalCalories = days.reduce(0) { $0 + ($1.calories ?? 0) }
