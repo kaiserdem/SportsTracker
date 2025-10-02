@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import CoreData
 
 struct CalendarFeature: Reducer {
     struct State: Equatable {
@@ -30,18 +31,45 @@ struct CalendarFeature: Reducer {
                 return .send(.loadEvents)
                 
             case .loadEvents:
+                print("🔄 CalendarFeature: Завантажую події...")
                 state.isLoading = true
-                return CalendarEffects.fetchDaysForDate(state.selectedDate)
+                return CoreDataEffects.fetchDays()
                     .map(Action.eventsLoaded)
                 
-            case let .eventsLoaded(events):
-                state.events = events
+            case let .eventsLoaded(days):
+                print("📋 CalendarFeature: Завантажено \(days.count) тренувань:")
+                for (index, day) in days.enumerated() {
+                    print("   \(index + 1). ID: \(day.id)")
+                    print("      SportType: '\(day.sportType.rawValue)'")
+                    print("      Date: \(day.date)")
+                    print("      Duration: \(day.duration)")
+                }
+                state.events = days
                 state.isLoading = false
                 return .none
                 
             case let .saveDay(day):
-                return CoreDataEffects.saveDay(day)
-                    .map { _ in .loadEvents }
+                return .run { send in
+                    do {
+                        let context = await MainActor.run { PersistenceController.shared.container.viewContext }
+                        let dayEntity = DayEntity(context: context)
+                        
+                        dayEntity.id = day.id
+                        dayEntity.date = day.date
+                        dayEntity.sportType = day.sportType.rawValue
+                        dayEntity.comment = day.comment
+                        dayEntity.duration = day.duration
+                        dayEntity.steps = Int32(day.steps ?? 0)
+                        dayEntity.calories = Int32(day.calories ?? 0)
+                        dayEntity.distance = day.distance ?? 0
+                        
+                        try context.save()
+                        print("✅ CalendarFeature: Успішно збережено тренування")
+                        await send(.loadEvents)
+                    } catch {
+                        print("❌ CalendarFeature: Помилка збереження: \(error)")
+                    }
+                }
                 
             case let .deleteDay(day):
                 return CoreDataEffects.deleteDay(day)
