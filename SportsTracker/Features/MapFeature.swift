@@ -2,17 +2,22 @@ import ComposableArchitecture
 import Foundation
 import CoreLocation
 
-struct MapFeature: Reducer {
+@Reducer
+struct MapFeature {
     struct State: Equatable {
         var userLocation: CLLocation?
         var routes: [Route] = []
         var isTracking = false
         var currentRoute: Route?
         var isLoading = false
+        var hasLocationPermission = false
     }
     
     enum Action: Equatable {
         case onAppear
+        case permissionGranted(Bool)
+        case getCurrentLocation
+        case locationReceived(CLLocation?)
         case startTracking
         case stopTracking
         case updateLocation(CLLocation)
@@ -20,24 +25,45 @@ struct MapFeature: Reducer {
         case routesLoaded([Route])
     }
     
+    @Dependency(\.locationManager) var locationManager
+    
     var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
             case .onAppear:
-                return .send(.loadRoutes)
+                return locationManager.requestPermission()
+                    .map(Action.permissionGranted)
+                
+            case .permissionGranted(let granted):
+                state.hasLocationPermission = granted
+                if granted {
+                    return .send(.getCurrentLocation)
+                }
+                return .none
+                
+            case .getCurrentLocation:
+                return locationManager.getCurrentLocation()
+                    .map(Action.locationReceived)
+                
+            case .locationReceived(let location):
+                state.userLocation = location
+                return .none
                 
             case .startTracking:
                 state.isTracking = true
                 state.currentRoute = Route()
-                return .none
+                return locationManager.startTracking()
+                    .map(Action.updateLocation)
                 
             case .stopTracking:
                 state.isTracking = false
-                if let route = state.currentRoute {
+                if var route = state.currentRoute {
+                    route.finish()
                     state.routes.append(route)
                     state.currentRoute = nil
                 }
-                return .none
+                return locationManager.stopTracking()
+                    .map { .routesLoaded([]) }
                 
             case let .updateLocation(location):
                 state.userLocation = location
@@ -48,7 +74,6 @@ struct MapFeature: Reducer {
                 
             case .loadRoutes:
                 state.isLoading = true
-                // Тут буде завантаження маршрутів
                 return .send(.routesLoaded([]))
                 
             case let .routesLoaded(routes):
