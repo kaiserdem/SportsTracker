@@ -10,6 +10,7 @@ struct Theme {
         // Додаткові кольори
         static let lightTeal = Color(red: 0.4, green: 0.7, blue: 0.7) // Світлий теал
         static let accent = Color(red: 0.3, green: 0.8, blue: 0.8) // Акцентний теал
+        static let coral = Color(red: 0.878, green: 0.420, blue: 0.357) // Кораловий #E06B5B
         
         // Нові кольори для фону екранів
         static let lightBlueGrey = Color(red: 0.867, green: 0.898, blue: 0.906) // #DDE5E7
@@ -95,6 +96,20 @@ struct Theme {
             center: .center,
             startRadius: 50,
             endRadius: 200
+        )
+        
+        // Градієнт з кораловим кольором
+        static let coral = LinearGradient(
+            colors: [Palette.coral, Palette.coral.opacity(0.8)],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        
+        // Комбінований градієнт теал-корал
+        static let tealCoral = LinearGradient(
+            colors: [Palette.teal, Palette.coral],
+            startPoint: .leading,
+            endPoint: .trailing
         )
     }
 }

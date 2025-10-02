@@ -31,7 +31,7 @@ struct MapView: View {
                                     viewStore.send(.stopTracking)
                                 }
                                 .buttonStyle(.borderedProminent)
-                                .tint(Theme.Palette.secondary)
+                                .tint(Theme.Palette.coral)
                             } else {
                                 Button("Start") {
                                     viewStore.send(.startTracking)
@@ -46,7 +46,7 @@ struct MapView: View {
                                 // Show routes list
                             }
                             .buttonStyle(.bordered)
-                            .tint(Theme.Palette.accent)
+                            .tint(Theme.Palette.coral)
                         }
                         .padding(.horizontal, Theme.Spacing.md)
                         .padding(.bottom, Theme.Spacing.lg)

@@ -141,7 +141,7 @@ struct ActiveWorkoutView: View {
                                     viewStore.send(.finishWorkout)
                                 }
                                 .buttonStyle(.borderedProminent)
-                                .tint(Theme.Palette.accent)
+                                .tint(Theme.Palette.coral)
                                 .frame(maxWidth: .infinity)
                             }
                             

@@ -5,8 +5,8 @@ struct CalendarView: View {
     let store: StoreOf<CalendarFeature>
     
     var body: some View {
-        WithViewStore(self.store, observe: { $0 }) { viewStore in
-            NavigationView {
+        WithViewStore(self.store, observe: { state in state }) { viewStore in
+            ScrollView {
                 VStack(spacing: Theme.Spacing.lg) {
                     // Add Workout Button
                     Button(action: {
@@ -23,19 +23,9 @@ struct CalendarView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
-                        .background(
-                            LinearGradient(
-                                colors: [
-                                    Theme.Palette.primary,
-                                    Theme.Palette.primary.opacity(0.8),
-                                    Theme.Palette.accent
-                                ],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
+                        .background(Theme.Gradients.tealCoral)
                         .cornerRadius(25)
-                        .shadow(color: Theme.Palette.primary.opacity(0.4), radius: 8, x: 0, y: 4)
+                        .shadow(color: Theme.Palette.coral.opacity(0.4), radius: 8, x: 0, y: 4)
                     }
                     .buttonStyle(PlainButtonStyle())
                     .padding(.horizontal, Theme.Spacing.md)
@@ -57,12 +47,12 @@ struct CalendarView: View {
                     }
                     .padding(.horizontal, Theme.Spacing.md)
                     
-                    // Events list for selected date
- VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                        Text("Workouts on \(formatDate(viewStore.selectedDate))")
-                            .font(.system(size: 20, weight: .semibold, design: .rounded))
-                            .foregroundColor(Theme.Palette.text)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                        // Events list for selected date
+                        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                            Text("Workouts on \(formatDate(viewStore.selectedDate))")
+                                .font(.system(size: 20, weight: .semibold, design: .rounded))
+                                .foregroundColor(Theme.Palette.text)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                         
                         // Segmented Control
                         Picker("Filter Events", selection: viewStore.binding(
@@ -100,12 +90,10 @@ struct CalendarView: View {
                             .cornerRadius(Theme.CornerRadius.medium)
                             .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
                         } else {
-                            let selectedDateEvents = viewStore.events.filter { day in
-                                Calendar.current.isDate(day.date, inSameDayAs: viewStore.selectedDate)
-                            }
+                            let allEvents = viewStore.events
                             
-                            // Filter events based on selected filter
-                            let filteredEvents = selectedDateEvents.filter { day in
+                            // Filter events based on selected filter first
+                            let filteredEvents = allEvents.filter { day in
                                 let today = Calendar.current.startOfDay(for: Date())
                                 let eventDate = Calendar.current.startOfDay(for: day.date)
                                 
@@ -117,13 +105,16 @@ struct CalendarView: View {
                                 }
                             }
                             
-                            if filteredEvents.isEmpty {
+                            // Then filter directly with filteredEvents - видаляємо фільтр по даті
+                            let selectedDateEvents = filteredEvents
+                            
+                            if selectedDateEvents.isEmpty {
                                 VStack(spacing: Theme.Spacing.sm) {
                                     Image(systemName: "calendar.badge.plus")
                                         .font(.largeTitle)
                                         .foregroundColor(Theme.Palette.textSecondary)
                                     
-                                    Text("No workouts on this date")
+                                    Text("No \( viewStore.selectedEventFilter.rawValue.lowercased()) workouts")
                                         .font(.system(size: 16, weight: .regular, design: .rounded))
                                         .foregroundColor(Theme.Palette.textSecondary)
                                     
@@ -139,31 +130,32 @@ struct CalendarView: View {
                                 .cornerRadius(Theme.CornerRadius.medium)
                                 .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
                             } else {
-                               ForEach(filteredEvents) { day in
+                                ForEach(selectedDateEvents) { day in
                                     if viewStore.selectedEventFilter == .future {
                                         FutureEventRow(day: day)
                                     } else {
                                         EventRow(day: day)
                                     }
-                               }
+                                }
                             }
                         }
                     }
                     .padding(.horizontal, Theme.Spacing.md)
                     
-                    Spacer()
+                    Spacer(minLength: 25)
                 }
+                .padding(.bottom, 25)
                 .background(Theme.Gradients.screenBackground)
                 .navigationTitle("Calendar")
                 .navigationBarTitleDisplayMode(.large)
-            }
-            .onAppear {
-                viewStore.send(.onAppear)
+                .onAppear {
+                    viewStore.send(.onAppear)
+                }
             }
         }
     }
     
-    private func formatDate(_ date: Date) -> String {
+    func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .none
@@ -180,7 +172,7 @@ struct EventRow: View {
             VStack(spacing: 2) {
                 Text(formatTime(day.date))
                     .font(.system(size: 18, weight: .semibold, design: .rounded))
-                    .foregroundColor(Theme.Palette.primary)
+                    .foregroundColor(Theme.Palette.coral)
                 
                 Text("time")
                     .font(.system(size: 12, weight: .medium, design: .rounded))
@@ -218,7 +210,7 @@ struct EventRow: View {
         .padding(Theme.Spacing.md)
         .background(Theme.Gradients.card)
         .cornerRadius(Theme.CornerRadius.medium)
-        .shadow(color: Theme.Palette.darkTeal.opacity(0.1), radius: 2, x: 0, y: 1)
+        .shadow(color: Theme.Palette.coral.opacity(0.1), radius: 2, x: 0, y: 1)
     }
     
     private func formatTime(_ date: Date) -> String {
@@ -237,7 +229,7 @@ struct FutureEventRow: View {
             VStack(spacing: 2) {
                 Text(formatTime(day.date))
                     .font(.system(size: 18, weight: .semibold, design: .rounded))
-                    .foregroundColor(Theme.Palette.accent)
+                    .foregroundColor(Theme.Palette.coral)
                 
                 Text("scheduled")
                     .font(.system(size: 12, weight: .medium, design: .rounded))
@@ -263,7 +255,7 @@ struct FutureEventRow: View {
             VStack(alignment: .trailing, spacing: 2) {
                 Text(formatFutureDate(day.date))
                     .font(.system(size: 12, weight: .medium, design: .rounded))
-                    .foregroundColor(Theme.Palette.accent)
+                    .foregroundColor(Theme.Palette.coral)
                 
                 Text("Upcoming")
                     .font(.system(size: 10, weight: .regular, design: .rounded))
@@ -275,9 +267,9 @@ struct FutureEventRow: View {
         .cornerRadius(Theme.CornerRadius.medium)
         .overlay(
             RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
-                .stroke(Theme.Palette.accent.opacity(0.3), lineWidth: 1)
+                .stroke(Theme.Palette.coral.opacity(0.3), lineWidth: 1)
         )
-        .shadow(color: Theme.Palette.darkTeal.opacity(0.1), radius: 2, x: 0, y: 1)
+        .shadow(color: Theme.Palette.coral.opacity(0.1), radius: 2, x: 0, y: 1)
     }
     
     private func formatTime(_ date: Date) -> String {

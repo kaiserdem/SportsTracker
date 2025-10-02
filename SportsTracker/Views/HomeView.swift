@@ -68,7 +68,7 @@ struct HomeView: View {
                                 QuickActionCard(
                                     title: "View Statistics",
                                     icon: "chart.bar.fill",
-                                    color: Theme.Palette.secondary
+                                    color: Theme.Palette.coral
                                 )
                                 
                                 QuickActionCard(

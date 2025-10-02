@@ -60,6 +60,10 @@ struct BatchCoreDataEffects {
 
 struct StatisticsEffects {
     static func fetchStatisticsForPeriod(_ period: StatisticPeriod) -> Effect<[StatisticData]> {
+        // Закоментовано: повертаємо порожні дані щоб уникнути крашу CoreData
+        return .send([])
+        
+        /*
         let calendar = Calendar.current
         let now = Date()
         
@@ -100,9 +104,21 @@ struct StatisticsEffects {
                     )
                 }
             }
+        */
     }
     
     static func fetchTotalStatistics() -> Effect<TotalStatistics> {
+        // Закоментовано: повертаємо порожні дані щоб уникнути крашу CoreData
+        let emptyStats = TotalStatistics(
+            totalDays: 0,
+            totalDuration: 0,
+            totalCalories: 0,
+            totalSteps: 0,
+            uniqueSportTypes: 0
+        )
+        return .send(emptyStats)
+        
+        /*
         CoreDataEffects.fetchDays()
             .map { days in
                 let totalDays = days.count
@@ -119,6 +135,7 @@ struct StatisticsEffects {
                     uniqueSportTypes: uniqueSportTypes
                 )
             }
+        */
     }
 }
 
@@ -161,6 +178,20 @@ struct WorkoutEffects {
     }
     
     static func getWorkoutStatistics() -> Effect<WorkoutStatistics> {
+        // Закоментовано: повертаємо порожні дані щоб уникнути крашу CoreData
+        let emptyStats = WorkoutStatistics(
+            totalWorkouts: 0,
+            totalDuration: 0,
+            totalDistance: 0,
+            totalCalories: 0,
+            favoriteSport: nil,
+            averageWorkoutDuration: 0,
+            longestWorkout: 0,
+            currentStreak: 0
+        )
+        return .send(emptyStats)
+        
+        /*
         CoreDataEffects.fetchDays()
             .map { days in
                 let totalWorkouts = days.count
@@ -200,6 +231,7 @@ struct WorkoutEffects {
                     currentStreak: currentStreak
                 )
             }
+        */
     }
 }
 

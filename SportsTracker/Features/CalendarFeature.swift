@@ -3,7 +3,7 @@ import Foundation
 import CoreData
 
 struct CalendarFeature: Reducer {
-    enum EventFilter: String, CaseIterable {
+    enum EventFilter: String, CaseIterable, Equatable {
         case future = "Future"
         case past = "Past"
     }
@@ -45,13 +45,28 @@ struct CalendarFeature: Reducer {
                     .map(Action.eventsLoaded)
                 
             case let .eventsLoaded(days):
-                print("📋 CalendarFeature: Завантажено \(days.count) тренувань:")
-                for (index, day) in days.enumerated() {
-                    print("   \(index + 1). ID: \(day.id)")
-                    print("      SportType: '\(day.sportType.rawValue)'")
-                    print("      Date: \(day.date)")
-                    print("      Duration: \(day.duration)")
+                print("📋 Завантажено активностей: \(days.count)")
+                
+                // Розділяємо на майбутні і минулі
+                let calendar = Calendar.current
+                let today = Date()
+                let futureDays = days.filter { day in
+                    calendar.startOfDay(for: day.date) > calendar.startOfDay(for: today)
                 }
+                let pastDays = days.filter { day in
+                    calendar.startOfDay(for: day.date) <= calendar.startOfDay(for: today)
+                }
+                
+                print("🔮 Майбутні (\(futureDays.count)):")
+                for (index, day) in futureDays.enumerated() {
+                    print("\(index + 1). \(day.sportType.rawValue) - \(day.date)")
+                }
+                
+                print("📜 Минулі (\(pastDays.count)):")
+                for (index, day) in pastDays.enumerated() {
+                    print("\(index + 1). \(day.sportType.rawValue) - \(day.date)")
+                }
+                
                 state.events = days
                 state.isLoading = false
                 return .none

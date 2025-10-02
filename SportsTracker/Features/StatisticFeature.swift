@@ -20,16 +20,23 @@ struct StatisticFeature: Reducer {
         Reduce { state, action in
             switch action {
             case .onAppear:
-                return .send(.loadStatistics)
+                // Закоментовано: повертаємо порожні дані щоб уникнути крашу CoreData
+                state.statistics = []
+                state.isLoading = false
+                return .none
                 
             case let .selectPeriod(period):
                 state.selectedPeriod = period
-                return .send(.loadStatistics)
+                // Закоментовано: не завантажуємо нові дані
+                state.statistics = []
+                state.isLoading = false
+                return .none
                 
             case .loadStatistics:
-                state.isLoading = true
-                return StatisticsEffects.fetchStatisticsForPeriod(state.selectedPeriod)
-                    .map(Action.statisticsLoaded)
+                // Закоментовано: повертаємо порожні дані
+                state.statistics = []
+                state.isLoading = false
+                return .none
                 
             case let .statisticsLoaded(statistics):
                 state.statistics = statistics
