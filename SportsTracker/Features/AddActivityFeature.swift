@@ -5,8 +5,8 @@ import ComposableArchitecture
 // MARK: - Distance Unit
 
 enum DistanceUnit: String, CaseIterable {
-    case meters = "м"
-    case kilometers = "км"
+    case meters = "m"
+    case kilometers = "km"
 }
 
 struct AddActivityFeature: Reducer {

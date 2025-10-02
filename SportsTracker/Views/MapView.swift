@@ -20,6 +20,37 @@ struct MapView: View {
                 )
                 .ignoresSafeArea()
                 
+                
+                if viewStore.isWorkoutActive {
+                    // Кнопка центрування на поточну точку (завжди видима)
+                    VStack {
+                        
+                        Spacer()
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                // Одноразове центрування на поточну точку
+                                if let location = viewStore.userLocation {
+                                    mapRegion = MKCoordinateRegion(
+                                        center: location.coordinate,
+                                        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+                                    )
+                                }
+                            }) {
+                                Image(systemName: "location.fill")
+                                    .font(.system(size: 20, weight: .medium))
+                                    .foregroundColor(.white)
+                                    .frame(width: 48, height: 48)
+                                    .background(Theme.Palette.primary)
+                                    .clipShape(Circle())
+                                    .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
+                            }
+                            .padding(.trailing, 20)
+                            .padding(.bottom, 20) // Відступ від нижнього краю
+                        }
+                    }
+                }
+                
                 // Overlay попап коли тренування не розпочато
                 if !viewStore.isWorkoutActive {
                     VStack {
@@ -82,29 +113,6 @@ struct MapView: View {
                     }
                 }
                 
-                // Кнопка центрування на поточну точку (завжди видима)
-                HStack {
-                    Spacer()
-                    Button(action: {
-                        // Одноразове центрування на поточну точку
-                        if let location = viewStore.userLocation {
-                            mapRegion = MKCoordinateRegion(
-                                center: location.coordinate,
-                                span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-                            )
-                        }
-                    }) {
-                        Image(systemName: "location.fill")
-                            .font(.system(size: 20, weight: .medium))
-                            .foregroundColor(.white)
-                            .frame(width: 48, height: 48)
-                            .background(Theme.Palette.primary)
-                            .clipShape(Circle())
-                            .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
-                    }
-                    .padding(.trailing, 20)
-                    .padding(.bottom, 20) // Відступ від нижнього краю
-                }
             }
             .onAppear {
                 viewStore.send(.onAppear)

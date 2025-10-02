@@ -211,12 +211,12 @@ struct ActiveWorkout: Identifiable, Equatable {
     // MARK: - Location Helper Methods
     
     var formattedStartLocation: String {
-        guard let location = startLocation else { return "Не встановлено" }
+        guard let location = startLocation else { return "Not Set" }
         return String(format: "%.6f, %.6f", location.coordinate.latitude, location.coordinate.longitude)
     }
     
     var formattedFinishLocation: String {
-        guard let location = finishLocation else { return "Не встановлено" }
+        guard let location = finishLocation else { return "Not Set" }
         return String(format: "%.6f, %.6f", location.coordinate.latitude, location.coordinate.longitude)
     }
     

@@ -73,8 +73,7 @@ extension CoreDataManager: DependencyKey {
                         // Якщо база даних порожня, додаємо тестові дані
                         if entities.isEmpty {
                             print("📝 CoreDataManager: База даних порожня, додаю тестові дані...")
-                            let testDays = TestDataManager.createTestActivities()
-                            TestDataManager.saveTestDataToCoreData(testDays)
+                           
                             
                             // Читаємо дані знову після додавання
                             let refreshedEntities = try context.fetch(request)

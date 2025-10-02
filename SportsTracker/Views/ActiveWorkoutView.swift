@@ -61,13 +61,13 @@ struct ActiveWorkoutView: View {
                             // Основна статистика
                             HStack(spacing: Theme.Spacing.lg) {
                                 WorkoutStatisticItem(
-                                    title: "Дистанція",
+                                    title: "Distance",
                                     value: workout.formattedDistance,
                                     icon: "location"
                                 )
                                 
                                 WorkoutStatisticItem(
-                                    title: "Темп",
+                                    title: "Pace",
                                     value: workout.formattedCurrentPace,
                                     icon: "timer"
                                 )
@@ -76,13 +76,13 @@ struct ActiveWorkoutView: View {
                             // Швидкість та активність
                             HStack(spacing: Theme.Spacing.lg) {
                                 WorkoutStatisticItem(
-                                    title: "Поточна швидкість",
+                                    title: "Current Speed",
                                     value: workout.formattedCurrentSpeed,
                                     icon: "speedometer"
                                 )
                                 
                                 WorkoutStatisticItem(
-                                    title: "Середня швидкість",
+                                    title: "Average Speed",
                                     value: workout.formattedAverageSpeed,
                                     icon: "chart.line.uptrend.xyaxis"
                                 )
@@ -92,13 +92,13 @@ struct ActiveWorkoutView: View {
                             if workout.locations.count > 0 {
                                 HStack(spacing: Theme.Spacing.lg) {
                                     WorkoutStatisticItem(
-                                        title: "Активний час",
+                                        title: "Active Time",
                                         value: workout.formattedActiveTime,
                                         icon: "figure.run"
                                     )
                                     
                                     WorkoutStatisticItem(
-                                        title: "Активність",
+                                        title: "Activity",
                                         value: String(format: "%.0f%%", workout.activeTimePercentage),
                                         icon: "percent"
                                     )
@@ -108,7 +108,7 @@ struct ActiveWorkoutView: View {
                             // GPS інформація
                             if workout.locations.count > 0 {
                                 WorkoutStatisticItem(
-                                    title: "GPS точок",
+                                    title: "GPS Points",
                                     value: "\(workout.locations.count)",
                                     icon: "dot.radiowaves.up.forward"
                                 )
@@ -122,14 +122,14 @@ struct ActiveWorkoutView: View {
                         VStack(spacing: Theme.Spacing.md) {
                             HStack(spacing: Theme.Spacing.md) {
                                 if case .active = viewStore.workoutState {
-                                    Button("Пауза") {
+                                    Button("Pause") {
                                         viewStore.send(.pauseWorkout)
                                     }
                                     .buttonStyle(.bordered)
                                     .tint(Theme.Palette.secondary)
                                     .frame(maxWidth: .infinity)
                                 } else if case .paused = viewStore.workoutState {
-                                    Button("Продовжити") {
+                                    Button("Resume") {
                                         viewStore.send(.resumeWorkout)
                                     }
                                     .buttonStyle(.borderedProminent)
@@ -137,7 +137,7 @@ struct ActiveWorkoutView: View {
                                     .frame(maxWidth: .infinity)
                                 }
                                 
-                                Button("Завершити") {
+                                Button("Finish") {
                                     viewStore.send(.finishWorkout)
                                 }
                                 .buttonStyle(.borderedProminent)
@@ -150,7 +150,7 @@ struct ActiveWorkoutView: View {
                                 Image(systemName: viewStore.isLocationTracking ? "location.fill" : "location.slash")
                                     .foregroundColor(viewStore.isLocationTracking ? Theme.Palette.accent : Theme.Palette.textSecondary)
                                 
-                                Text(viewStore.isLocationTracking ? "GPS активне" : "GPS неактивне")
+                                Text(viewStore.isLocationTracking ? "GPS Active" : "GPS Inactive")
                                     .font(Theme.Typography.caption)
                                     .foregroundColor(Theme.Palette.textSecondary)
                                 
@@ -170,7 +170,7 @@ struct ActiveWorkoutView: View {
                     }
                 }
                 .background(Theme.Gradients.screenBackground)
-                //.navigationTitle("Тренування")
+                //.navigationTitle("Workout")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
@@ -273,14 +273,14 @@ struct WorkoutSummaryView: View {
                 
                 // Кнопки
                 VStack(spacing: Theme.Spacing.md) {
-                    Button("Зберегти тренування") {
+                    Button("Save Workout") {
                         onSave()
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(Theme.Palette.primary)
                     .frame(maxWidth: .infinity)
                     
-                    Button("Видалити") {
+                    Button("Delete") {
                         onDiscard()
                     }
                     .buttonStyle(.bordered)
