@@ -49,7 +49,17 @@ struct HomeFeature: Reducer {
                 
             case let .daysLoaded(days):
                 print("📋 HomeFeature: Завантажено \(days.count) тренувань:")
-                for (index, day) in days.enumerated() {
+                
+                // Фільтруємо тільки минулі та сьогоднішні активності
+                let calendar = Calendar.current
+                let today = calendar.startOfDay(for: Date())
+                let filteredDays = days.filter { day in
+                    let dayDate = calendar.startOfDay(for: day.date)
+                    return dayDate <= today
+                }
+                
+                print("📋 HomeFeature: Після фільтрації залишилось \(filteredDays.count) тренувань:")
+                for (index, day) in filteredDays.enumerated() {
                     print("   \(index + 1). ID: \(day.id)")
                     print("      SportType: '\(day.sportType.rawValue)'")
                     print("      Date: \(day.date)")
@@ -59,7 +69,7 @@ struct HomeFeature: Reducer {
                     print("      Calories: \(day.calories ?? 0)")
                     print("      Distance: \(day.distance ?? 0) м")
                 }
-                state.recentDays = days
+                state.recentDays = filteredDays
                 state.isLoading = false
                 return .none
                 

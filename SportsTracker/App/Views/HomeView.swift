@@ -654,23 +654,43 @@ struct MonthlyCalendarView: View {
                 ForEach(1...daysInMonth, id: \.self) { day in
                     let hasWorkout = hasWorkoutOnDay(day)
                     let isToday = isCurrentMonth && day == currentDay
+                    let isFuture = isCurrentMonth && day > currentDay
+                    let isPast = isCurrentMonth && day < currentDay
                     
-                    // Діагностика для сьогоднішнього дня
-                    if isToday {
-                        //let _ = print("📅 Календар: СЬОГОДНІШНІЙ ДЕНЬ: \(day) (isToday: \(isToday), hasWorkout: \(hasWorkout))")
-                    }
+                    // Визначаємо колір на основі логіки
+                    let dayColor: Color = {
+                        if isToday {
+                            return hasWorkout ? .yellow : .red
+                        } else if isFuture {
+                            return hasWorkout ? Theme.Palette.accent : Color.clear
+                        } else if isPast {
+                            return hasWorkout ? .green : Color.clear
+                        } else {
+                            return hasWorkout ? Theme.Palette.primary : Color.clear
+                        }
+                    }()
+                    
+                    let textColor: Color = {
+                        if isToday {
+                            return .black
+                        } else if hasWorkout {
+                            return .white
+                        } else {
+                            return Theme.Palette.text
+                        }
+                    }()
                     
                     Text("\(day)")
                         .font(.system(size: 12, weight: .medium, design: .rounded))
-                        .foregroundColor((isToday || hasWorkout) ? .white : Theme.Palette.text)
+                        .foregroundColor(textColor)
                         .frame(width: 19, height: 19)
                         .background(
                             Circle()
-                                .fill(hasWorkout ? Theme.Palette.primary : (isToday ? .green : Color.clear))
+                                .fill(dayColor)
                         )
                         .overlay(
                             Circle()
-                                .stroke(hasWorkout ? Theme.Palette.primary : (isToday ? .green : Color.clear), lineWidth: 1)
+                                .stroke(dayColor, lineWidth: 1)
                         )
                         .id("day-\(day)")
                 }
