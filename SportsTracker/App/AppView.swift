@@ -17,9 +17,7 @@ struct AppView: View {
                     )
                 )
                 .tabItem {
-                    Image(systemName: "house.fill")
-                    Text("Головна")
-                        .font(Theme.Typography.caption)
+                    Image(systemName: "figure.run")
                 }
                 .tag(AppFeature.State.Tab.home)
                 
@@ -31,8 +29,6 @@ struct AppView: View {
                 )
                 .tabItem {
                     Image(systemName: "calendar")
-                    Text("Календар")
-                        .font(Theme.Typography.caption)
                 }
                 .tag(AppFeature.State.Tab.calendar)
                 
@@ -44,8 +40,6 @@ struct AppView: View {
                 )
                 .tabItem {
                     Image(systemName: "chart.bar.fill")
-                    Text("Статистика")
-                        .font(Theme.Typography.caption)
                 }
                 .tag(AppFeature.State.Tab.statistic)
                 
@@ -57,8 +51,6 @@ struct AppView: View {
                 )
                 .tabItem {
                     Image(systemName: "map.fill")
-                    Text("Карта")
-                        .font(Theme.Typography.caption)
                 }
                 .tag(AppFeature.State.Tab.map)
             }

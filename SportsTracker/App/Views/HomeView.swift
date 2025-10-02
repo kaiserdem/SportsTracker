@@ -17,6 +17,15 @@ struct HomeView: View {
                             .padding(.horizontal, Theme.Spacing.md)
                         }
                         
+                        HStack {
+                            Text("  This Month")
+                                .font(.system(size: 36, weight: .bold, design: .rounded))
+                                .foregroundColor(.black)
+                            
+                            
+                            Spacer()
+                        }
+                        
                         // Статистика місяця та календар
                         HStack(spacing: Theme.Spacing.md) {
                             // Статистика місяця
@@ -28,10 +37,11 @@ struct HomeView: View {
                                 .frame(maxWidth: .infinity)
                         }
                         .padding(.horizontal, Theme.Spacing.md)
+                        .padding(.top, 0)
                         
-                        // Швидкі дії
+                        // Quick Actions
                         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                            Text("Швидкі дії")
+                            Text("Quick Actions")
                                 .font(.system(size: 17, weight: .semibold, design: .rounded))
                                 .foregroundColor(Theme.Palette.text)
                             
@@ -62,7 +72,7 @@ struct HomeView: View {
                                 )
                                 
                                 QuickActionCard(
-                                    title: "Маршрути",
+                                    title: "Routes",
                                     icon: "map.fill",
                                     color: Theme.Palette.accent
                                 )
@@ -70,9 +80,9 @@ struct HomeView: View {
                         }
                         .padding(.horizontal, Theme.Spacing.md)
                         
-                        // Останні активності
+                        // Recent Activities
                         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                            Text("Останні активності")
+                            Text("Recent Activities")
                                 .font(.system(size: 17, weight: .semibold, design: .rounded))
                                 .foregroundColor(Theme.Palette.text)
                             
@@ -81,7 +91,7 @@ struct HomeView: View {
                                     .frame(maxWidth: .infinity)
                                     .padding()
                             } else if viewStore.recentDays.isEmpty {
-                                Text("Поки що немає активностей")
+                                Text("No activities yet")
                                     .font(.system(size: 16, weight: .regular, design: .rounded))
                                     .foregroundColor(Theme.Palette.textSecondary)
                                     .frame(maxWidth: .infinity)
@@ -100,7 +110,6 @@ struct HomeView: View {
                     .padding(.vertical, Theme.Spacing.lg)
                 }
                 .background(Theme.Gradients.screenBackground)
-                .navigationTitle("Головна")
                 .navigationBarTitleDisplayMode(.large)
             }
             .onAppear {
@@ -211,7 +220,7 @@ struct ActiveWorkoutBanner: View {
                                 .scaleEffect(1.0)
                                 .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: workout.formattedDuration)
                             
-                            Text(workout.isPaused ? "Пауза" : "Активне")
+                            Text(workout.isPaused ? "Paused" : "Active")
                                 .font(.system(size: 12, weight: .medium, design: .rounded))
                                 .foregroundColor(.white.opacity(0.9))
                         }
@@ -283,7 +292,7 @@ struct DayRow: View {
                         .foregroundColor(Theme.Palette.text)
                     
                     if let calories = day.calories {
-                        Text("\(calories) ккал")
+                        Text("\(calories) kcal")
                             .font(.system(size: 12, weight: .medium, design: .rounded))
                             .foregroundColor(Theme.Palette.textSecondary)
                     }
@@ -303,7 +312,7 @@ struct DayRow: View {
                         .font(.system(size: 12, weight: .medium, design: .rounded))
                         .foregroundColor(Theme.Palette.accent)
                     
-                    Text("\(day.supplementsCount) додатків")
+                    Text("\(day.supplementsCount) supplements")
                         .font(.system(size: 12, weight: .medium, design: .rounded))
                         .foregroundColor(Theme.Palette.accent)
                     
@@ -427,9 +436,6 @@ struct MonthlyStatsView: View {
         let _ = print("🔄 MonthlyStatsView: Перерендерується body")
         VStack(spacing: Theme.Spacing.md) {
             // 1. Назва
-            Text("В цьому місяці")
-                .font(.system(size: 16, weight: .regular, design: .rounded))
-                .foregroundColor(Theme.Palette.textSecondary)
             
             // 2. Горизонтальний стек з елементами
             HStack(spacing: Theme.Spacing.sm) {
@@ -437,7 +443,7 @@ struct MonthlyStatsView: View {
                 if daysCount > 0 {
                     VStack(spacing: 4) {
                         Text("\(daysCount)")
-                            .font(.system(size: 34, weight: .bold, design: .rounded))
+                            .font(.system(size: 44, weight: .bold, design: .rounded))
                             .foregroundColor(Theme.Palette.primary)
                         Text("days")
                             .font(.system(size: 12, weight: .medium, design: .rounded))
@@ -448,7 +454,7 @@ struct MonthlyStatsView: View {
                 // Години
                 VStack(spacing: 4) {
                     Text("\(hoursCount)")
-                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                        .font(.system(size: 44, weight: .bold, design: .rounded))
                         .foregroundColor(Theme.Palette.primary)
                     Text("hrs")
                         .font(.system(size: 12, weight: .medium, design: .rounded))
@@ -458,7 +464,7 @@ struct MonthlyStatsView: View {
                 // Хвилини
                 VStack(spacing: 4) {
                     Text("\(minutesCount)")
-                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                        .font(.system(size: 44, weight: .bold, design: .rounded))
                         .foregroundColor(Theme.Palette.primary)
                     Text("min")
                         .font(.system(size: 12, weight: .medium, design: .rounded))
@@ -470,7 +476,7 @@ struct MonthlyStatsView: View {
                 // Секунди
                 VStack(spacing: 4) {
                     Text("\(secondsCount)")
-                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                        .font(.system(size: 44, weight: .bold, design: .rounded))
                         .foregroundColor(Theme.Palette.primary)
                     Text("sec")
                         .font(.system(size: 12, weight: .medium, design: .rounded))
@@ -478,8 +484,8 @@ struct MonthlyStatsView: View {
                 }
             }
             
-            // 3. Назва "Тривалість"
-            Text("Тривалість")
+            // 3. Назва "Duration"
+            Text("Duration")
                 .font(.system(size: 17, weight: .semibold, design: .rounded))
                 .foregroundColor(Theme.Palette.text)
             
@@ -490,8 +496,8 @@ struct MonthlyStatsView: View {
                 .minimumScaleFactor(0.5)
                 .lineLimit(1)
             
-            // 5. Назва "Дистанція"
-            Text("Дистанція")
+            // 5. Назва "Distance"
+            Text("Distance")
                 .font(.system(size: 17, weight: .semibold, design: .rounded))
                 .foregroundColor(Theme.Palette.text)
         }
@@ -614,7 +620,7 @@ struct MonthlyCalendarView: View {
             
             // Дні тижня
             HStack(spacing: 2) {
-                ForEach(["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"], id: \.self) { day in
+                ForEach(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], id: \.self) { day in
                     Text(day)
                         .font(.system(size: 10, weight: .medium, design: .rounded))
                         .foregroundColor(Theme.Palette.textSecondary)
