@@ -643,12 +643,12 @@ struct MonthlyCalendarView: View {
                 
                 // Назва місяця та року
                 HStack(spacing: 3) {
-                    Text("\(currentMonth)")
+                    Text(String(format: "%d", currentMonth))
                         .font(.system(size: titleFontSize, weight: .medium, design: .rounded))
                         .foregroundColor(Theme.Palette.text)
                         .fontWeight(.medium)
                     
-                    Text("\(currentYear)")
+                    Text(String(format: "%d", currentYear))
                         .font(.system(size: titleFontSize, weight: .medium, design: .rounded))
                         .foregroundColor(Theme.Palette.textSecondary)
                 }
