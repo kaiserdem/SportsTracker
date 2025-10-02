@@ -40,14 +40,20 @@ struct ActiveWorkout: Identifiable, Equatable {
     }
     
     var formattedDuration: String {
-        let hours = Int(duration) / 3600
-        let minutes = Int(duration) % 3600 / 60
-        let seconds = Int(duration) % 60
+        let totalSeconds = Int(duration)
+        let days = totalSeconds / (24 * 3600)
+        let hours = (totalSeconds % (24 * 3600)) / 3600
+        let minutes = (totalSeconds % 3600) / 60
+        let seconds = totalSeconds % 60
         
-        if hours > 0 {
-            return String(format: "%d:%02d:%02d", hours, minutes, seconds)
+        if days > 0 {
+            return "\(days) : \(String(format: "%02d", hours)) : \(String(format: "%02d", minutes)) : \(String(format: "%02d", seconds))"
+        } else if hours > 0 {
+            return "\(hours) : \(String(format: "%02d", minutes)) : \(String(format: "%02d", seconds))"
+        } else if minutes > 0 {
+            return "\(minutes) : \(String(format: "%02d", seconds))"
         } else {
-            return String(format: "%d:%02d", minutes, seconds)
+            return "\(seconds)"
         }
     }
     
@@ -93,9 +99,9 @@ struct ActiveWorkout: Identifiable, Equatable {
     
     var formattedDistance: String {
         if totalDistance >= 1000 {
-            return String(format: "%.2f км", totalDistance / 1000)
+            return String(format: "%.2f km", totalDistance / 1000)
         } else {
-            return String(format: "%.0f м", totalDistance)
+            return String(format: "%.0f m", totalDistance)
         }
     }
     
@@ -259,14 +265,14 @@ struct WorkoutStatistics: Equatable {
     var formattedTotalDuration: String {
         let hours = Int(totalDuration) / 3600
         let minutes = Int(totalDuration) % 3600 / 60
-        return String(format: "%d год %d хв", hours, minutes)
+        return String(format: "%d hrs %d min", hours, minutes)
     }
     
     var formattedTotalDistance: String {
         if totalDistance >= 1000 {
-            return String(format: "%.1f км", totalDistance / 1000)
+            return String(format: "%.1f km", totalDistance / 1000)
         } else {
-            return String(format: "%.0f м", totalDistance)
+            return String(format: "%.0f m", totalDistance)
         }
     }
     

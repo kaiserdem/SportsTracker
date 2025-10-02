@@ -4,7 +4,7 @@ import CoreData
 
 struct HomeFeature: Reducer {
     struct State: Equatable {
-        var welcomeMessage = "Ласкаво просимо до SportsTracker!"
+        var welcomeMessage = "Welcome to SportsTracker!"
         var recentDays: [Day] = []
         var allDays: [Day] = [] // Всі події для календаря
         var isLoading = false

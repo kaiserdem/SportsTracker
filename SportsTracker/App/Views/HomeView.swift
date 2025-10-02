@@ -50,7 +50,7 @@ struct HomeView: View {
                                 GridItem(.flexible())
                             ], spacing: Theme.Spacing.md) {
                                 QuickActionCard(
-                                    title: "Почати тренування",
+                                    title: "Start Workout",
                                     icon: "play.circle.fill",
                                     color: Theme.Palette.primary
                                 ) {
@@ -58,7 +58,7 @@ struct HomeView: View {
                                 }
                                 
                                 QuickActionCard(
-                                    title: "Додати активність",
+                                    title: "Add Activity",
                                     icon: "plus.circle.fill",
                                     color: Theme.Palette.accent
                                 ) {
@@ -66,7 +66,7 @@ struct HomeView: View {
                                 }
                                 
                                 QuickActionCard(
-                                    title: "Переглянути статистику",
+                                    title: "View Statistics",
                                     icon: "chart.bar.fill",
                                     color: Theme.Palette.secondary
                                 )
@@ -287,7 +287,7 @@ struct DayRow: View {
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text(day.formattedDuration)
+                    Text(day.formattedDurationSimple)
                         .font(.system(size: 16, weight: .regular, design: .rounded))
                         .foregroundColor(Theme.Palette.text)
                     
@@ -374,18 +374,21 @@ struct MonthlyStatsView: View {
     
     private var formattedDuration: String {
         let totalSeconds = Int(monthlyDuration.rounded())
-        let hours = totalSeconds / 3600
+        let days = totalSeconds / (24 * 3600)
+        let hours = (totalSeconds % (24 * 3600)) / 3600
         let minutes = (totalSeconds % 3600) / 60
         let seconds = totalSeconds % 60
         
-        //print("📊 MonthlyStatsView: Форматування - totalSeconds: \(totalSeconds), hours: \(hours), minutes: \(minutes), seconds: \(seconds)")
+        //print("📊 MonthlyStatsView: Форматування - totalSeconds: \(totalSeconds), days: \(days), hours: \(hours), minutes: \(minutes), seconds: \(seconds)")
         
-        if hours > 0 {
-            return "\(hours)г:\(String(format: "%02d", minutes))хв:\(String(format: "%02d", seconds))с"
+        if days > 0 {
+            return "\(days):\(String(format: "%02d", hours)):\(String(format: "%02d", minutes)):\(String(format: "%02d", seconds))"
+        } else if hours > 0 {
+            return "\(hours):\(String(format: "%02d", minutes)):\(String(format: "%02d", seconds))"
         } else if minutes > 0 {
-            return "\(minutes)хв:\(String(format: "%02d", seconds))с"
+            return "\(minutes):\(String(format: "%02d", seconds))"
         } else {
-            return "\(seconds)с"
+            return "\(seconds)"
         }
     }
     
@@ -417,16 +420,16 @@ struct MonthlyStatsView: View {
             let km = distance / 1000
             // Видаляємо зайві нулі після коми
             if km.truncatingRemainder(dividingBy: 1) == 0 {
-                let result = String(format: "%.0f км", km)
+                let result = String(format: "%.0f km", km)
                 print("📊 MonthlyStatsView: Результат форматування: \(result)")
                 return result
             } else {
-                let result = String(format: "%.1f км", km)
+                let result = String(format: "%.1f km", km)
                 print("📊 MonthlyStatsView: Результат форматування: \(result)")
                 return result
             }
         } else {
-            let result = String(format: "%.0f м", distance)
+            let result = String(format: "%.0f m", distance)
             print("📊 MonthlyStatsView: Результат форматування: \(result)")
             return result
         }
@@ -437,51 +440,13 @@ struct MonthlyStatsView: View {
         VStack(spacing: Theme.Spacing.md) {
             // 1. Назва
             
-            // 2. Горизонтальний стек з елементами
-            HStack(spacing: Theme.Spacing.sm) {
-                // Дні (показуємо тільки якщо є)
-                if daysCount > 0 {
-                    VStack(spacing: 4) {
-                        Text("\(daysCount)")
-                            .font(.system(size: 44, weight: .bold, design: .rounded))
-                            .foregroundColor(Theme.Palette.primary)
-                        Text("days")
-                            .font(.system(size: 12, weight: .medium, design: .rounded))
-                            .foregroundColor(Theme.Palette.textSecondary)
-                    }
-                }
-                
-                // Години
-                VStack(spacing: 4) {
-                    Text("\(hoursCount)")
-                        .font(.system(size: 44, weight: .bold, design: .rounded))
-                        .foregroundColor(Theme.Palette.primary)
-                    Text("hrs")
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
-                        .foregroundColor(Theme.Palette.textSecondary)
-                }
-                
-                // Хвилини
-                VStack(spacing: 4) {
-                    Text("\(minutesCount)")
-                        .font(.system(size: 44, weight: .bold, design: .rounded))
-                        .foregroundColor(Theme.Palette.primary)
-                    Text("min")
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
-                        .foregroundColor(Theme.Palette.textSecondary)
-                }
-                
-                
-                
-                // Секунди
-                VStack(spacing: 4) {
-                    Text("\(secondsCount)")
-                        .font(.system(size: 44, weight: .bold, design: .rounded))
-                        .foregroundColor(Theme.Palette.primary)
-                    Text("sec")
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
-                        .foregroundColor(Theme.Palette.textSecondary)
-                }
+            // 2. Форматована тривалість з двокрапками
+            VStack(spacing: 4) {
+                Text(formattedDuration)
+                    .font(.system(size: 44, weight: .bold, design: .rounded))
+                    .foregroundColor(Theme.Palette.primary)
+                    .minimumScaleFactor(0.5)
+                    .lineLimit(1)
             }
             
             // 3. Назва "Duration"
@@ -491,7 +456,7 @@ struct MonthlyStatsView: View {
             
             // 4. Дистанція
             Text(formattedDistance)
-                .font(.system(size: 28, weight: .bold, design: .rounded))
+                .font(.system(size: 44, weight: .bold, design: .rounded))
                 .foregroundColor(Theme.Palette.secondary)
                 .minimumScaleFactor(0.5)
                 .lineLimit(1)
@@ -502,6 +467,7 @@ struct MonthlyStatsView: View {
                 .foregroundColor(Theme.Palette.text)
         }
         .frame(maxWidth: .infinity, minHeight: 200)
+        
         .padding(.vertical, Theme.Spacing.lg)
         .background(
             RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
@@ -625,6 +591,8 @@ struct MonthlyCalendarView: View {
                         .font(.system(size: 10, weight: .medium, design: .rounded))
                         .foregroundColor(Theme.Palette.textSecondary)
                         .frame(maxWidth: .infinity)
+                        .minimumScaleFactor(0.5)
+                        .lineLimit(1)
                 }
             }
             

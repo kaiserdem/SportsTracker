@@ -36,14 +36,38 @@ struct Day: Identifiable, Codable, Equatable {
     // MARK: - Computed Properties
     
     var formattedDuration: String {
-        let hours = Int(duration) / 3600
-        let minutes = Int(duration) % 3600 / 60
-        let seconds = Int(duration) % 60
+        let totalSeconds = Int(duration)
+        let days = totalSeconds / (24 * 3600)
+        let hours = (totalSeconds % (24 * 3600)) / 3600
+        let minutes = (totalSeconds % 3600) / 60
+        let seconds = totalSeconds % 60
         
-        if hours > 0 {
-            return String(format: "%d:%02d:%02d", hours, minutes, seconds)
+        if days > 0 {
+            return "\(days) : \(String(format: "%02d", hours)) : \(String(format: "%02d", minutes)) : \(String(format: "%02d", seconds))"
+        } else if hours > 0 {
+            return "\(hours) : \(String(format: "%02d", minutes)) : \(String(format: "%02d", seconds))"
+        } else if minutes > 0 {
+            return "\(minutes) : \(String(format: "%02d", seconds))"
         } else {
-            return String(format: "%d:%02d", minutes, seconds)
+            return "\(seconds)"
+        }
+    }
+    
+    var formattedDurationSimple: String {
+        let totalSeconds = Int(duration)
+        let days = totalSeconds / (24 * 3600)
+        let hours = (totalSeconds % (24 * 3600)) / 3600
+        let minutes = (totalSeconds % 3600) / 60
+        let seconds = totalSeconds % 60
+        
+        if days > 0 {
+            return "\(days)d \(String(format: "%02d", hours))h \(String(format: "%02d", minutes))m"
+        } else if hours > 0 {
+            return "\(hours)h \(String(format: "%02d", minutes))m"
+        } else if minutes > 0 {
+            return "\(minutes)m \(String(format: "%02d", seconds))s"
+        } else {
+            return "\(seconds)s"
         }
     }
     
@@ -68,12 +92,12 @@ struct Day: Identifiable, Codable, Equatable {
             let km = distance / 1000
             // Видаляємо зайві нулі після коми
             if km.truncatingRemainder(dividingBy: 1) == 0 {
-                return String(format: "%.0f км", km)
+                return String(format: "%.0f km", km)
             } else {
-                return String(format: "%.1f км", km)
+                return String(format: "%.1f km", km)
             }
         } else {
-            return String(format: "%.0f м", distance)
+            return String(format: "%.0f m", distance)
         }
     }
     
@@ -111,7 +135,7 @@ struct Supplement: Identifiable, Codable, Equatable {
             return "pills.fill"
         case let name where name.contains("bcaa"):
             return "capsule.fill"
-        case let name where name.contains("вітамін"):
+        case let name where name.contains("vitamin"):
             return "pills"
         case let name where name.contains("омега"):
             return "fish.fill"

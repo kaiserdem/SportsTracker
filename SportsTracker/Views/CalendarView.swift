@@ -48,11 +48,11 @@ struct CalendarView: View {
                                     .font(.largeTitle)
                                     .foregroundColor(Theme.Palette.textSecondary)
                                 
-                                Text("Немає запланованих тренувань")
+                                Text("No scheduled workouts")
                                     .font(Theme.Typography.body)
                                     .foregroundColor(Theme.Palette.textSecondary)
                                 
-                                Button("Додати тренування") {
+                                Button("Add Workout") {
                                     // Дія для додавання тренування
                                 }
                                 .buttonStyle(.borderedProminent)
