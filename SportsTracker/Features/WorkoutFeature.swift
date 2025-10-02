@@ -67,7 +67,14 @@ struct WorkoutFeature: Reducer {
                 
             case let .startWorkout(sportType):
                 print("🚀 WorkoutFeature: startWorkout з sportType: \(sportType.rawValue)")
-                let workout = ActiveWorkout(sportType: sportType)
+                var workout = ActiveWorkout(sportType: sportType)
+                
+                // Встановлюємо стартову локацію якщо вона є
+                if let location = state.currentLocation {
+                    workout.startLocation = location
+                    print("📍 WorkoutFeature: Встановлено стартову локацію: \(location.coordinate.latitude), \(location.coordinate.longitude)")
+                }
+                
                 print("🏃 WorkoutFeature: Створено ActiveWorkout з sportType: \(workout.sportType.rawValue)")
                 state.workoutState = .active(workout)
                 state.isShowingQuickStart = false
@@ -111,6 +118,12 @@ struct WorkoutFeature: Reducer {
                 
             case .finishWorkout:
                 if case .active(var workout) = state.workoutState {
+                    // Встановлюємо фінішну локацію якщо вона є
+                    if let location = state.currentLocation {
+                        workout.finishLocation = location
+                        print("🏁 WorkoutFeature: Встановлено фінішну локацію: \(location.coordinate.latitude), \(location.coordinate.longitude)")
+                    }
+                    
                     workout.finish()
                     state.workoutState = .finished(workout)
                     return .merge(
@@ -119,6 +132,12 @@ struct WorkoutFeature: Reducer {
                         .send(.saveWorkout)
                     )
                 } else if case .paused(var workout) = state.workoutState {
+                    // Встановлюємо фінішну локацію якщо вона є
+                    if let location = state.currentLocation {
+                        workout.finishLocation = location
+                        print("🏁 WorkoutFeature: Встановлено фінішну локацію: \(location.coordinate.latitude), \(location.coordinate.longitude)")
+                    }
+                    
                     workout.finish()
                     state.workoutState = .finished(workout)
                     return .merge(

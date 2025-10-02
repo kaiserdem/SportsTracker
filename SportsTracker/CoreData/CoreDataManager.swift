@@ -70,13 +70,29 @@ extension CoreDataManager: DependencyKey {
                         let entities = try context.fetch(request)
                         print("📋 CoreDataManager: Знайдено \(entities.count) entities")
                         
-                        let days = entities.compactMap { entity in
-                            Self.convertEntityToDay(entity)
-                        }
-                        
-                        print("📋 CoreDataManager: Конвертовано \(days.count) тренувань")
-                        Task.detached {
-                            await send(days)
+                        // Якщо база даних порожня, додаємо тестові дані
+                        if entities.isEmpty {
+                            print("📝 CoreDataManager: База даних порожня, додаю тестові дані...")
+                            let testDays = TestDataManager.createTestActivities()
+                            TestDataManager.saveTestDataToCoreData(testDays)
+                            
+                            // Читаємо дані знову після додавання
+                            let refreshedEntities = try context.fetch(request)
+                            let days = refreshedEntities.compactMap { entity in
+                                Self.convertEntityToDay(entity)
+                            }
+                            print("📋 CoreDataManager: Після додавання тестових даних: \(days.count) тренувань")
+                            Task.detached {
+                                await send(days)
+                            }
+                        } else {
+                            let days = entities.compactMap { entity in
+                                Self.convertEntityToDay(entity)
+                            }
+                            print("📋 CoreDataManager: Конвертовано \(days.count) тренувань")
+                            Task.detached {
+                                await send(days)
+                            }
                         }
                     } catch {
                         print("❌ CoreDataManager: Помилка отримання тренувань: \(error)")

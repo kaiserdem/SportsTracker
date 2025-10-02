@@ -16,6 +16,10 @@ struct ActiveWorkout: Identifiable, Equatable {
     var calories: Int?
     var supplements: [Supplement]?
     
+    // Start and finish locations
+    var startLocation: CLLocation?
+    var finishLocation: CLLocation?
+    
     // GPS data
     var currentSpeed: Double = 0 // m/s
     var averageSpeed: Double = 0 // m/s
@@ -203,6 +207,31 @@ struct ActiveWorkout: Identifiable, Equatable {
     }
     
     // MARK: - Conversion to Day
+    
+    // MARK: - Location Helper Methods
+    
+    var formattedStartLocation: String {
+        guard let location = startLocation else { return "Не встановлено" }
+        return String(format: "%.6f, %.6f", location.coordinate.latitude, location.coordinate.longitude)
+    }
+    
+    var formattedFinishLocation: String {
+        guard let location = finishLocation else { return "Не встановлено" }
+        return String(format: "%.6f, %.6f", location.coordinate.latitude, location.coordinate.longitude)
+    }
+    
+    var hasStartLocation: Bool {
+        return startLocation != nil
+    }
+    
+    var hasFinishLocation: Bool {
+        return finishLocation != nil
+    }
+    
+    var distanceFromStartToFinish: Double? {
+        guard let start = startLocation, let finish = finishLocation else { return nil }
+        return finish.distance(from: start)
+    }
     
     func toDay() -> Day {
         print("🔄 ActiveWorkout: Converting to Day with sportType: \(sportType.rawValue)")
