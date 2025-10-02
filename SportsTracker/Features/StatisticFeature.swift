@@ -20,25 +20,29 @@ struct StatisticFeature: Reducer {
         Reduce { state, action in
             switch action {
             case .onAppear:
-                // Закоментовано: повертаємо порожні дані щоб уникнути крашу CoreData
-                state.statistics = []
-                state.isLoading = false
-                return .none
+                print("📊 StatisticFeature: onAppear - початкове завантаження статистики")
+                state.isLoading = true
+                return StatisticsEffects.fetchStatisticsForPeriod(state.selectedPeriod)
+                    .map(Action.statisticsLoaded)
                 
             case let .selectPeriod(period):
+                print("📊 StatisticFeature: змінив період на \(period.rawValue)")
                 state.selectedPeriod = period
-                // Закоментовано: не завантажуємо нові дані
-                state.statistics = []
-                state.isLoading = false
-                return .none
+                state.isLoading = true
+                return StatisticsEffects.fetchStatisticsForPeriod(period)
+                    .map(Action.statisticsLoaded)
                 
             case .loadStatistics:
-                // Закоментовано: повертаємо порожні дані
-                state.statistics = []
-                state.isLoading = false
-                return .none
+                print("📊 StatisticFeature: loadStatistics - ручне перезавантаження статистики")
+                state.isLoading = true
+                return StatisticsEffects.fetchStatisticsForPeriod(state.selectedPeriod)
+                    .map(Action.statisticsLoaded)
                 
             case let .statisticsLoaded(statistics):
+                print("✅ StatisticFeature: отримано статистику (\(statistics.count) записів) для періоду \(state.selectedPeriod.rawValue)")
+                for (index, stat) in statistics.enumerated() {
+                    print("   \(index + 1). \(stat.type.rawValue): тривалість=\(stat.totalDuration)s, дистанція=\(stat.totalDistance)m")
+                }
                 state.statistics = statistics
                 state.isLoading = false
                 return .none
