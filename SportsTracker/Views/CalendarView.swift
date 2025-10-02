@@ -196,9 +196,9 @@ struct EventRow: View {
             Spacer()
             
             VStack(alignment: .trailing, spacing: 2) {
-                Text(day.formattedDuration)
+                Text(day.formattedDurationSimple)
                     .font(.system(size: 16, weight: .regular, design: .rounded))
-                    .foregroundColor(Theme.Palette.text)
+                    .foregroundColor(Theme.Palette.coral)
                 
                 if let calories = day.calories {
                     Text("\(calories) kcal")
