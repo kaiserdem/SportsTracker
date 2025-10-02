@@ -11,6 +11,7 @@ struct MapFeature {
         var currentRoute: Route?
         var isLoading = false
         var hasLocationPermission = false
+        var isWorkoutActive = false  // Чи активне тренування
     }
     
     enum Action: Equatable {
@@ -24,6 +25,7 @@ struct MapFeature {
         case loadRoutes
         case routesLoaded([Route])
         case goToHomeScreen
+        case updateWorkoutState(Bool)  // Оновити стан тренування
     }
     
     @Dependency(\.locationManager) var locationManager
@@ -84,6 +86,10 @@ struct MapFeature {
                 
             case .goToHomeScreen:
                 // Цей action буде оброблятися в AppFeature, тут просто повертаємо none
+                return .none
+                
+            case .updateWorkoutState(let isActive):
+                state.isWorkoutActive = isActive
                 return .none
             }
         }

@@ -53,6 +53,8 @@ struct AppFeature: Reducer {
                 return .none
                 
             case .home:
+                // Синхронізуємо стан тренування з MapFeature
+                state.map.isWorkoutActive = state.home.workout.isActive
                 return .none
                 
             case .calendar(.showAddActivity):

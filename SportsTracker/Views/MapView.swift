@@ -32,7 +32,8 @@ struct MapView: View {
                 .ignoresSafeArea()
                 
                 // Overlay попап коли тренування не розпочато
-                VStack {
+                if !viewStore.isWorkoutActive {
+                    VStack {
                     Spacer()
                     
                     VStack(spacing: 20) {
@@ -89,6 +90,7 @@ struct MapView: View {
                     .padding(.horizontal, 20)
                     
                     Spacer()
+                    }
                     
                     // Кнопка центрування на поточну точку (завжди видима)
                     HStack {
