@@ -5,27 +5,16 @@ import MapKit
 struct MapView: View {
     let store: StoreOf<MapFeature>
     
+    @State private var mapRegion = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 50.4501, longitude: 30.5234), // Київ
+        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+    )
+    
     var body: some View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             ZStack {
                 Map(
-                    coordinateRegion: Binding(
-                        get: {
-                            if let location = viewStore.userLocation {
-                                return MKCoordinateRegion(
-                                    center: location.coordinate,
-                                    span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-                                )
-                            } else {
-                                // Просто встановлюємо карту в центр карти без хардкоду конкретних координат
-                                return MKCoordinateRegion(
-                                    center: CLLocationCoordinate2D(latitude: 0, longitude: 0),
-                                    span: MKCoordinateSpan(latitudeDelta: 100, longitudeDelta: 100)
-                                )
-                            }
-                        },
-                        set: { _ in }
-                    ),
+                    coordinateRegion: $mapRegion,
                     showsUserLocation: true,
                     userTrackingMode: .none
                 )
@@ -98,7 +87,12 @@ struct MapView: View {
                     Spacer()
                     Button(action: {
                         // Одноразове центрування на поточну точку
-                        viewStore.send(.getCurrentLocation)
+                        if let location = viewStore.userLocation {
+                            mapRegion = MKCoordinateRegion(
+                                center: location.coordinate,
+                                span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+                            )
+                        }
                     }) {
                         Image(systemName: "location.fill")
                             .font(.system(size: 20, weight: .medium))
@@ -109,11 +103,19 @@ struct MapView: View {
                             .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
                     }
                     .padding(.trailing, 20)
-                    .padding(.bottom, 100) // Відступ від нижнього краю
+                    .padding(.bottom, 20) // Відступ від нижнього краю
                 }
             }
             .onAppear {
                 viewStore.send(.onAppear)
+            }
+            .onChange(of: viewStore.userLocation) { location in
+                if let location = location {
+                    mapRegion = MKCoordinateRegion(
+                        center: location.coordinate,
+                        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+                    )
+                }
             }
         }
     }
