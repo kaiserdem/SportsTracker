@@ -142,7 +142,6 @@ struct WorkoutDetailView: View {
                                 
                                 Button("Видалити тренування") {
                                     print("🗑️ WorkoutDetailView: Натиснуто 'Видалити тренування'")
-                                    dismiss()
                                     viewStore.send(.deleteWorkout)
                                 }
                                 .buttonStyle(.bordered)
@@ -499,36 +498,31 @@ struct EditWorkoutView: View {
 
 struct CustomBackButton: View {
     let action: () -> Void
-    @State private var isPressed = false
     
     var body: some View {
-        Button(action: action) {
-            HStack(spacing: 6) {
+        Button(action: {
+            print("🔙 CustomBackButton: Натиснуто кнопку назад")
+            action()
+        }) {
+            HStack(spacing: 4) {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(Theme.Palette.primary)
-                
+                    .font(.system(size: 14, weight: .medium))
                 Text("Назад")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(Theme.Palette.primary)
+                    .font(Theme.Typography.body)
             }
+            .foregroundColor(Theme.Palette.primary)
             .padding(.horizontal, 12)
-            .padding(.vertical, 8)
+            .padding(.vertical, 6)
             .background(
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Theme.Palette.primary.opacity(isPressed ? 0.2 : 0.1))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(Theme.Palette.primary.opacity(0.3), lineWidth: 1)
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Theme.Palette.primary, lineWidth: 1)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.clear)
                     )
             )
-            .scaleEffect(isPressed ? 0.95 : 1.0)
-            .animation(.easeInOut(duration: 0.1), value: isPressed)
         }
         .buttonStyle(PlainButtonStyle())
-        .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
-            isPressed = pressing
-        }, perform: {})
     }
 }
 

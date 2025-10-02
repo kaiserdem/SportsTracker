@@ -47,11 +47,29 @@ struct QuickStartView: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
-                        Button("Назад") {
+                        Button(action: {
                             print("🔙 QuickStartView: Натиснуто кнопку назад")
                             viewStore.send(.hideQuickStart)
+                        }) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "chevron.left")
+                                    .font(.system(size: 14, weight: .medium))
+                                Text("Назад")
+                                    .font(Theme.Typography.body)
+                            }
+                            .foregroundColor(Theme.Palette.primary)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Theme.Palette.primary, lineWidth: 1)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .fill(Color.clear)
+                                    )
+                            )
                         }
-                        .foregroundColor(Theme.Palette.primary)
+                        .buttonStyle(PlainButtonStyle())
                     }
                 }
                 
