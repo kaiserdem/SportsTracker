@@ -30,7 +30,7 @@ struct AddActivityView: View {
                                     .foregroundColor(Theme.Palette.text)
                                 
                                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: Theme.Spacing.sm) {
-                                    ForEach(SportType.allCases, id: \.self) { sport in
+                                    ForEach(SportType.distanceSports, id: \.self) { sport in
                                         SportTypeCard(
                                             sportType: sport,
                                             isSelected: viewStore.selectedSportType == sport

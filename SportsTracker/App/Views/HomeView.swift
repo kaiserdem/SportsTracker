@@ -497,7 +497,7 @@ struct MonthlyCalendarView: View {
                 Spacer()
                 
                 // Назва місяця та року
-                HStack(spacing: 2) {
+                HStack(spacing: 3) {
                     Text("\(currentMonth)")
                         .font(Theme.Typography.caption)
                         .foregroundColor(Theme.Palette.text)
@@ -572,7 +572,7 @@ struct MonthlyCalendarView: View {
                     Text("\(day)")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor((isToday || hasWorkout) ? .white : Theme.Palette.text)
-                        .frame(width: 24, height: 24)
+                        .frame(width: 19, height: 19)
                         .background(
                             Circle()
                                 .fill(hasWorkout ? Theme.Palette.primary : (isToday ? .green : Color.clear))

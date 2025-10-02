@@ -35,6 +35,8 @@ struct Theme {
         static let headline = Font.headline.weight(.medium)
         static let body = Font.body
         static let caption = Font.caption
+        static let caption2 = Font.caption2
+
     }
     
     struct Spacing {
