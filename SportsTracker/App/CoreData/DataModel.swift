@@ -65,6 +65,11 @@ class DataModel {
         caloriesAttribute.attributeType = .integer32AttributeType
         caloriesAttribute.isOptional = true
         
+        let distanceAttribute = NSAttributeDescription()
+        distanceAttribute.name = "distance"
+        distanceAttribute.attributeType = .doubleAttributeType
+        distanceAttribute.isOptional = true
+        
         dayEntity.properties = [
             idAttribute,
             dateAttribute,
@@ -72,7 +77,8 @@ class DataModel {
             commentAttribute,
             durationAttribute,
             stepsAttribute,
-            caloriesAttribute
+            caloriesAttribute,
+            distanceAttribute
         ]
         
         // SupplementEntity
@@ -158,6 +164,7 @@ public class DayEntity: NSManagedObject {
     @NSManaged public var duration: Double
     @NSManaged public var steps: Int32
     @NSManaged public var calories: Int32
+    @NSManaged public var distance: Double
     @NSManaged public var supplements: NSSet?
 }
 

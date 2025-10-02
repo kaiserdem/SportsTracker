@@ -35,6 +35,7 @@ extension CoreDataManager: DependencyKey {
                     dayEntity.duration = day.duration
                     dayEntity.steps = Int32(day.steps ?? 0)
                     dayEntity.calories = Int32(day.calories ?? 0)
+                    dayEntity.distance = day.distance ?? 0
                     
                     // Додаємо додатки
                     if let supplements = day.supplements {
@@ -126,6 +127,7 @@ extension CoreDataManager: DependencyKey {
                     print("   - Comment: \(day.comment ?? "nil")")
                     print("   - Steps: \(day.steps ?? 0)")
                     print("   - Calories: \(day.calories ?? 0)")
+                    print("   - Distance: \(day.distance ?? 0) м")
                     
                     let context = await MainActor.run { PersistenceController.shared.container.viewContext }
                     let request = NSFetchRequest<DayEntity>(entityName: "DayEntity")
@@ -139,6 +141,7 @@ extension CoreDataManager: DependencyKey {
                         entity.duration = day.duration
                         entity.steps = Int32(day.steps ?? 0)
                         entity.calories = Int32(day.calories ?? 0)
+                        entity.distance = day.distance ?? 0
                         print("✅ CoreDataManager: Оновлено entity з новими даними")
                         
                         // Видаляємо старі додатки
@@ -275,6 +278,7 @@ extension CoreDataManager: DependencyKey {
                         print("   - Entity Comment: \(entity.comment ?? "nil")")
                         print("   - Entity Steps: \(entity.steps)")
                         print("   - Entity Calories: \(entity.calories)")
+                        print("   - Entity Distance: \(entity.distance)")
                         
                         if let day = Self.convertEntityToDay(entity) {
                             print("✅ CoreDataManager: Конвертовано в Day:")
@@ -285,6 +289,7 @@ extension CoreDataManager: DependencyKey {
                             print("   - Day Comment: \(day.comment ?? "nil")")
                             print("   - Day Steps: \(day.steps ?? 0)")
                             print("   - Day Calories: \(day.calories ?? 0)")
+                            print("   - Day Distance: \(day.distance ?? 0) м")
                             await send(day)
                         } else {
                             print("❌ CoreDataManager: Не вдалося конвертувати entity в Day")
@@ -295,6 +300,7 @@ extension CoreDataManager: DependencyKey {
                                 sportType: .hiking,
                                 comment: nil,
                                 duration: 0,
+                                distance: nil,
                                 steps: nil,
                                 calories: nil,
                                 supplements: nil
@@ -310,6 +316,7 @@ extension CoreDataManager: DependencyKey {
                             sportType: .hiking,
                             comment: nil,
                             duration: 0,
+                            distance: nil,
                             steps: nil,
                             calories: nil,
                             supplements: nil
@@ -325,6 +332,7 @@ extension CoreDataManager: DependencyKey {
                         sportType: .hiking,
                         comment: nil,
                         duration: 0,
+                        distance: nil,
                         steps: nil,
                         calories: nil,
                         supplements: nil
@@ -355,6 +363,7 @@ extension CoreDataManager: DependencyKey {
             sportType: sportType,
             comment: entity.comment,
             duration: entity.duration,
+            distance: entity.distance > 0 ? entity.distance : nil,
             steps: entity.steps > 0 ? Int(entity.steps) : nil,
             calories: entity.calories > 0 ? Int(entity.calories) : nil,
             supplements: supplements

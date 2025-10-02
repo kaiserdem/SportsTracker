@@ -301,6 +301,8 @@ struct EditWorkoutView: View {
     @State private var comment: String
     @State private var calories: String
     @State private var steps: String
+    @State private var distance: String
+    @State private var distanceUnit: DistanceUnit = .kilometers
     
     init(workout: Day, onSave: @escaping (Day) -> Void, onCancel: @escaping () -> Void) {
         self.workout = workout
@@ -309,25 +311,40 @@ struct EditWorkoutView: View {
         self._comment = State(initialValue: workout.comment ?? "")
         self._calories = State(initialValue: workout.calories.map(String.init) ?? "")
         self._steps = State(initialValue: workout.steps.map(String.init) ?? "")
+        
+        // Ініціалізація дистанції
+        if let distanceValue = workout.distance {
+            if distanceValue >= 1000 {
+                self._distance = State(initialValue: String(format: "%.2f", distanceValue / 1000))
+                self._distanceUnit = State(initialValue: .kilometers)
+            } else {
+                self._distance = State(initialValue: String(format: "%.0f", distanceValue))
+                self._distanceUnit = State(initialValue: .meters)
+            }
+        } else {
+            self._distance = State(initialValue: "")
+            self._distanceUnit = State(initialValue: .kilometers)
+        }
     }
     
     var body: some View {
         NavigationView {
-            VStack(spacing: Theme.Spacing.lg) {
-                // Заголовок
-                VStack(spacing: Theme.Spacing.sm) {
-                    Text("Редагувати тренування")
-                        .font(Theme.Typography.title)
-                        .foregroundColor(Theme.Palette.text)
+            ScrollView {
+                VStack(spacing: Theme.Spacing.lg) {
+                    // Заголовок
+                    VStack(spacing: Theme.Spacing.sm) {
+                        Text("Редагувати тренування")
+                            .font(Theme.Typography.title)
+                            .foregroundColor(Theme.Palette.text)
+                        
+                        Text(workout.sportType.rawValue)
+                            .font(Theme.Typography.body)
+                            .foregroundColor(Theme.Palette.textSecondary)
+                    }
+                    .padding(.top, Theme.Spacing.lg)
                     
-                    Text(workout.sportType.rawValue)
-                        .font(Theme.Typography.body)
-                        .foregroundColor(Theme.Palette.textSecondary)
-                }
-                .padding(.top, Theme.Spacing.lg)
-                
-                // Форма редагування
-                VStack(spacing: Theme.Spacing.md) {
+                    // Форма редагування
+                    VStack(spacing: Theme.Spacing.md) {
                     VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                         Text("Коментар")
                             .font(Theme.Typography.headline)
@@ -361,29 +378,50 @@ struct EditWorkoutView: View {
                             }
                         }
                     }
-                }
-                .padding(.horizontal, Theme.Spacing.lg)
-                
-                Spacer()
-                
-                // Кнопки
-                VStack(spacing: Theme.Spacing.md) {
-                    Button("Зберегти зміни") {
-                        saveChanges()
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(Theme.Palette.primary)
-                    .frame(maxWidth: .infinity)
                     
-                    Button("Скасувати") {
-                        onCancel()
+                    // Дистанція (тільки для спорту з дистанцією)
+                    if workout.sportType.hasDistance {
+                        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                            Text("Дистанція")
+                                .font(Theme.Typography.headline)
+                                .foregroundColor(Theme.Palette.text)
+                            
+                            HStack(spacing: Theme.Spacing.sm) {
+                                TextField("0.0", text: $distance)
+                                    .textFieldStyle(.roundedBorder)
+                                    .keyboardType(.decimalPad)
+                                
+                                Picker("Одиниця", selection: $distanceUnit) {
+                                    Text("м").tag(DistanceUnit.meters)
+                                    Text("км").tag(DistanceUnit.kilometers)
+                                }
+                                .pickerStyle(.segmented)
+                                .frame(width: 80)
+                            }
+                        }
                     }
-                    .buttonStyle(.bordered)
-                    .tint(Theme.Palette.secondary)
-                    .frame(maxWidth: .infinity)
+                    }
+                    .padding(.horizontal, Theme.Spacing.lg)
+                    
+                    // Кнопки
+                    VStack(spacing: Theme.Spacing.md) {
+                        Button("Зберегти зміни") {
+                            saveChanges()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(Theme.Palette.primary)
+                        .frame(maxWidth: .infinity)
+                        
+                        Button("Скасувати") {
+                            onCancel()
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(Theme.Palette.secondary)
+                        .frame(maxWidth: .infinity)
+                    }
+                    .padding(.horizontal, Theme.Spacing.lg)
+                    .padding(.bottom, Theme.Spacing.lg)
                 }
-                .padding(.horizontal, Theme.Spacing.lg)
-                .padding(.bottom, Theme.Spacing.lg)
             }
             .background(Theme.Gradients.screenBackground)
             .navigationTitle("Редагування")
@@ -399,12 +437,26 @@ struct EditWorkoutView: View {
     }
     
     private func saveChanges() {
+        // Конвертація дистанції в метри
+        let distanceInMeters: Double?
+        if !distance.isEmpty, let distanceValue = Double(distance) {
+            switch distanceUnit {
+            case .meters:
+                distanceInMeters = distanceValue
+            case .kilometers:
+                distanceInMeters = distanceValue * 1000
+            }
+        } else {
+            distanceInMeters = nil
+        }
+        
         let updatedWorkout = Day(
             id: workout.id,
             date: workout.date,
             sportType: workout.sportType,
             comment: comment.isEmpty ? nil : comment,
             duration: workout.duration,
+            distance: distanceInMeters,
             steps: Int(steps),
             calories: Int(calories),
             supplements: workout.supplements

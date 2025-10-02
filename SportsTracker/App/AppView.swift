@@ -111,7 +111,7 @@ struct AppView: View {
                     return $0.workoutDetail 
                 },
                 send: { _ in 
-                    print("❌ AppView: Закриваю workoutDetail")
+                    //print("❌ AppView: Закриваю workoutDetail")
                     return .workoutDetail(.hideActiveWorkout) 
                 }
             )) { _ in

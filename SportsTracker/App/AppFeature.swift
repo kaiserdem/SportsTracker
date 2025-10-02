@@ -38,10 +38,10 @@ struct AppFeature: Reducer {
                 return .none
                 
             case .home(.showWorkoutDetail(let workoutId)):
-                print("📥 AppFeature: Отримав showWorkoutDetail з HomeFeature з ID: \(workoutId)")
+                //print("📥 AppFeature: Отримав showWorkoutDetail з HomeFeature з ID: \(workoutId)")
                 if state.workoutDetail == nil {
                     state.workoutDetail = WorkoutDetailFeature.State(workoutId: workoutId)
-                    print("✅ AppFeature: Створив WorkoutDetailFeature.State")
+                    //print("✅ AppFeature: Створив WorkoutDetailFeature.State")
                 } else {
                     print("⚠️ AppFeature: WorkoutDetailFeature.State вже існує, ігнорую")
                 }

@@ -337,7 +337,7 @@ struct MonthlyStatsView: View {
             day.date >= startOfMonth
         }
         
-        print("📊 MonthlyStatsView: Знайдено \(filteredDays.count) тренувань в поточному місяці")
+        //print("📊 MonthlyStatsView: Знайдено \(filteredDays.count) тренувань в поточному місяці")
         for day in filteredDays {
             print("   - \(day.sportType.rawValue): \(day.duration) секунд, дистанція: \(day.distance ?? 0) м")
         }
@@ -347,13 +347,13 @@ struct MonthlyStatsView: View {
     
     private var monthlyDuration: TimeInterval {
         let totalDuration = currentMonthDays.reduce(0) { $0 + $1.duration }
-        print("📊 MonthlyStatsView: Загальна тривалість: \(totalDuration) секунд")
+        //print("📊 MonthlyStatsView: Загальна тривалість: \(totalDuration) секунд")
         return totalDuration
     }
     
     private var monthlyDistance: Double {
         let totalDistance = currentMonthDays.compactMap { $0.distance }.reduce(0, +)
-        print("📊 MonthlyStatsView: Загальна дистанція: \(totalDistance) метрів")
+        //print("📊 MonthlyStatsView: Загальна дистанція: \(totalDistance) метрів")
         return totalDistance
     }
     
@@ -363,7 +363,7 @@ struct MonthlyStatsView: View {
         let minutes = (totalSeconds % 3600) / 60
         let seconds = totalSeconds % 60
         
-        print("📊 MonthlyStatsView: Форматування - totalSeconds: \(totalSeconds), hours: \(hours), minutes: \(minutes), seconds: \(seconds)")
+        //print("📊 MonthlyStatsView: Форматування - totalSeconds: \(totalSeconds), hours: \(hours), minutes: \(minutes), seconds: \(seconds)")
         
         if hours > 0 {
             return "\(hours)г:\(String(format: "%02d", minutes))хв:\(String(format: "%02d", seconds))с"
@@ -393,6 +393,9 @@ struct MonthlyStatsView: View {
                 Text(formattedDuration)
                     .font(.system(size: 28, weight: .bold, design: .rounded))
                     .foregroundColor(Theme.Palette.primary)
+                    .minimumScaleFactor(0.5)
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity)
                 
                 Text("Тривалість")
                     .font(Theme.Typography.caption)
@@ -404,6 +407,9 @@ struct MonthlyStatsView: View {
                 Text(formattedDistance)
                     .font(.system(size: 28, weight: .bold, design: .rounded))
                     .foregroundColor(Theme.Palette.secondary)
+                    .minimumScaleFactor(0.5)
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity)
                 
                 Text("Дистанція")
                     .font(Theme.Typography.caption)
@@ -538,16 +544,16 @@ struct MonthlyCalendarView: View {
             }
             
             // Діагностична інформація
-            let _ = print("📅 Календар: === ПОТОЧНА ДАТА ===")
-            let _ = print("📅 Календар: Сьогодні: \(currentDate)")
-            let _ = print("📅 Календар: Поточний день: \(currentDay)")
-            let _ = print("📅 Календар: Поточний місяць: \(currentMonth)")
-            let _ = print("📅 Календар: Поточний рік: \(currentYear)")
-            let _ = print("📅 Календар: Перший день місяця: \(firstDayOfMonth)")
-            let _ = print("📅 Календар: День тижня першого дня: \(calendar.component(.weekday, from: firstDayOfMonth))")
-            let _ = print("📅 Календар: Відрегульований день: \(firstWeekday)")
-            let _ = print("📅 Календар: Кількість днів у місяці: \(daysInMonth)")
-            let _ = print("📅 Календар: ======================")
+//            let _ = print("📅 Календар: === ПОТОЧНА ДАТА ===")
+//            let _ = print("📅 Календар: Сьогодні: \(currentDate)")
+//            let _ = print("📅 Календар: Поточний день: \(currentDay)")
+//            let _ = print("📅 Календар: Поточний місяць: \(currentMonth)")
+//            let _ = print("📅 Календар: Поточний рік: \(currentYear)")
+//            let _ = print("📅 Календар: Перший день місяця: \(firstDayOfMonth)")
+//            let _ = print("📅 Календар: День тижня першого дня: \(calendar.component(.weekday, from: firstDayOfMonth))")
+//            let _ = print("📅 Календар: Відрегульований день: \(firstWeekday)")
+//            let _ = print("📅 Календар: Кількість днів у місяці: \(daysInMonth)")
+//            let _ = print("📅 Календар: ======================")
             
             // Календарна сітка
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 2), count: 7), spacing: 2) {
