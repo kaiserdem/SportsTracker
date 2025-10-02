@@ -64,14 +64,17 @@ struct AppFeature: Reducer {
                 return .none
                 
             case .workoutDetail(.workoutDeleted):
+                print("📥 AppFeature: Отримав workoutDeleted, закриваю workoutDetail")
                 state.workoutDetail = nil
                 return .none
                 
             case .workoutDetail(.notifyWorkoutDeleted):
+                print("📥 AppFeature: Отримав notifyWorkoutDeleted, закриваю workoutDetail та оновлюю дані")
                 state.workoutDetail = nil
                 return .send(.home(.loadRecentActivities))
                 
             case .workoutDetail(.notifyWorkoutUpdated):
+                print("📥 AppFeature: Отримав notifyWorkoutUpdated, відправляю loadRecentActivities")
                 return .send(.home(.loadRecentActivities))
                 
             case .workoutDetail:

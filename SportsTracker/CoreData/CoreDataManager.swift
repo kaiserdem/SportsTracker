@@ -100,17 +100,25 @@ extension CoreDataManager: DependencyKey {
         deleteDay: { day in
             .run { send in
                 do {
+                    print("🗑️ CoreDataManager: Видаляю тренування:")
+                    print("   - ID: \(day.id)")
+                    print("   - SportType: \(day.sportType.rawValue)")
+                    
                     let context = await MainActor.run { PersistenceController.shared.container.viewContext }
                     let request = NSFetchRequest<DayEntity>(entityName: "DayEntity")
                     request.predicate = NSPredicate(format: "id == %@", day.id as CVarArg)
                     
                     if let entity = try context.fetch(request).first {
+                        print("✅ CoreDataManager: Знайдено entity для видалення")
                         context.delete(entity)
                         try context.save()
+                        print("✅ CoreDataManager: Успішно видалено тренування з Core Data")
                     } else {
+                        print("❌ CoreDataManager: Тренування з ID \(day.id) не знайдено для видалення")
                         await send(.deleteError("Day not found"))
                     }
                 } catch {
+                    print("❌ CoreDataManager: Помилка видалення тренування: \(error)")
                     await send(.deleteError(error.localizedDescription))
                 }
             }

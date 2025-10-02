@@ -6,6 +6,7 @@ struct HomeView: View {
     
     var body: some View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
+            let _ = print("🔄 HomeView: Перерендерується з \(viewStore.recentDays.count) тренуваннями")
             NavigationView {
                 ScrollView {
                     VStack(spacing: Theme.Spacing.lg) {
@@ -106,7 +107,8 @@ struct HomeView: View {
             .onAppear {
                 viewStore.send(.onAppear)
             }
-            .sheet(isPresented: viewStore.binding(
+            
+            .fullScreenCover(isPresented: viewStore.binding(
                 get: \.workout.isShowingQuickStart,
                 send: { $0 ? .workout(.showQuickStart) : .workout(.hideQuickStart) }
             )) {
@@ -117,7 +119,7 @@ struct HomeView: View {
                     )
                 )
             }
-            .sheet(isPresented: viewStore.binding(
+            .fullScreenCover(isPresented: viewStore.binding(
                 get: \.isShowingAddActivity,
                 send: HomeFeature.Action.dismissAddActivity
             )) {
@@ -353,7 +355,13 @@ struct MonthlyStatsView: View {
     
     private var monthlyDistance: Double {
         let totalDistance = currentMonthDays.compactMap { $0.distance }.reduce(0, +)
-        //print("📊 MonthlyStatsView: Загальна дистанція: \(totalDistance) метрів")
+        print("📊 MonthlyStatsView: Загальна дистанція: \(totalDistance) метрів")
+        print("📊 MonthlyStatsView: Дні з дистанцією: \(currentMonthDays.compactMap { $0.distance }.count)")
+        for day in currentMonthDays {
+            if let distance = day.distance {
+                print("   - \(day.sportType.rawValue): \(distance) м")
+            }
+        }
         return totalDistance
     }
     
@@ -375,14 +383,30 @@ struct MonthlyStatsView: View {
     }
     
     private var formattedDistance: String {
-        if monthlyDistance >= 1000 {
-            return String(format: "%.2f км", monthlyDistance / 1000)
+        let distance = monthlyDistance
+        print("📊 MonthlyStatsView: Форматую дистанцію: \(distance) м")
+        
+        if distance >= 1000 {
+            let km = distance / 1000
+            // Видаляємо зайві нулі після коми
+            if km.truncatingRemainder(dividingBy: 1) == 0 {
+                let result = String(format: "%.0f км", km)
+                print("📊 MonthlyStatsView: Результат форматування: \(result)")
+                return result
+            } else {
+                let result = String(format: "%.1f км", km)
+                print("📊 MonthlyStatsView: Результат форматування: \(result)")
+                return result
+            }
         } else {
-            return String(format: "%.0f м", monthlyDistance)
+            let result = String(format: "%.0f м", distance)
+            print("📊 MonthlyStatsView: Результат форматування: \(result)")
+            return result
         }
     }
     
     var body: some View {
+        let _ = print("🔄 MonthlyStatsView: Перерендерується body")
         VStack(spacing: Theme.Spacing.sm) {
             Text("В цьому місяці")
                 .font(Theme.Typography.body)
@@ -572,7 +596,7 @@ struct MonthlyCalendarView: View {
                     
                     // Діагностика для сьогоднішнього дня
                     if isToday {
-                        let _ = print("📅 Календар: СЬОГОДНІШНІЙ ДЕНЬ: \(day) (isToday: \(isToday), hasWorkout: \(hasWorkout))")
+                        //let _ = print("📅 Календар: СЬОГОДНІШНІЙ ДЕНЬ: \(day) (isToday: \(isToday), hasWorkout: \(hasWorkout))")
                     }
                     
                     Text("\(day)")

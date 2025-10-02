@@ -133,6 +133,7 @@ struct WorkoutDetailView: View {
                             // Кнопки дій
                             VStack(spacing: Theme.Spacing.md) {
                                 Button("Редагувати тренування") {
+                                    print("🔘 WorkoutDetailView: Натиснуто 'Редагувати тренування'")
                                     viewStore.send(.editWorkout)
                                 }
                                 .buttonStyle(.borderedProminent)
@@ -140,6 +141,8 @@ struct WorkoutDetailView: View {
                                 .frame(maxWidth: .infinity)
                                 
                                 Button("Видалити тренування") {
+                                    print("🗑️ WorkoutDetailView: Натиснуто 'Видалити тренування'")
+                                    dismiss()
                                     viewStore.send(.deleteWorkout)
                                 }
                                 .buttonStyle(.bordered)
@@ -190,6 +193,7 @@ struct WorkoutDetailView: View {
                 )
             ) {
                 Button("Видалити", role: .destructive) {
+                    print("🗑️ WorkoutDetailView: Підтверджено видалення в алерті")
                     viewStore.send(.confirmDelete)
                 }
                 Button("Скасувати", role: .cancel) {
@@ -203,12 +207,17 @@ struct WorkoutDetailView: View {
                 send: { $0 ? .showEditSheet : .hideEditSheet }
             )) {
                 if let workout = viewStore.workout {
+                    let _ = print("📱 WorkoutDetailView: Відкриваю EditWorkoutView")
                     EditWorkoutView(
                         workout: workout,
                         onSave: { updatedWorkout in
+                            print("📤 WorkoutDetailView: onSave викликано, відправляю updateWorkout")
+                            print("   - ID: \(updatedWorkout.id)")
+                            print("   - Distance: \(updatedWorkout.distance ?? 0) м")
                             viewStore.send(.updateWorkout(updatedWorkout))
                         },
                         onCancel: {
+                            print("❌ WorkoutDetailView: onCancel викликано")
                             viewStore.send(.hideEditSheet)
                         }
                     )
@@ -305,6 +314,10 @@ struct EditWorkoutView: View {
     @State private var distanceUnit: DistanceUnit = .kilometers
     
     init(workout: Day, onSave: @escaping (Day) -> Void, onCancel: @escaping () -> Void) {
+        print("🏗️ EditWorkoutView: Ініціалізую з тренуванням:")
+        print("   - ID: \(workout.id)")
+        print("   - Distance: \(workout.distance ?? 0) м")
+        
         self.workout = workout
         self.onSave = onSave
         self.onCancel = onCancel
@@ -315,15 +328,20 @@ struct EditWorkoutView: View {
         // Ініціалізація дистанції
         if let distanceValue = workout.distance {
             if distanceValue >= 1000 {
-                self._distance = State(initialValue: String(format: "%.2f", distanceValue / 1000))
+                let kmValue = String(format: "%.2f", distanceValue / 1000)
+                self._distance = State(initialValue: kmValue)
                 self._distanceUnit = State(initialValue: .kilometers)
+                print("   - Ініціалізую дистанцію: \(kmValue) км")
             } else {
-                self._distance = State(initialValue: String(format: "%.0f", distanceValue))
+                let mValue = String(format: "%.0f", distanceValue)
+                self._distance = State(initialValue: mValue)
                 self._distanceUnit = State(initialValue: .meters)
+                print("   - Ініціалізую дистанцію: \(mValue) м")
             }
         } else {
             self._distance = State(initialValue: "")
             self._distanceUnit = State(initialValue: .kilometers)
+            print("   - Дистанція порожня, встановлюю порожній рядок")
         }
     }
     
@@ -437,17 +455,23 @@ struct EditWorkoutView: View {
     }
     
     private func saveChanges() {
+        print("💾 EditWorkoutView: Зберігаю зміни...")
+        print("   - Distance input: '\(distance)' \(distanceUnit.rawValue)")
+        
         // Конвертація дистанції в метри
         let distanceInMeters: Double?
         if !distance.isEmpty, let distanceValue = Double(distance) {
             switch distanceUnit {
             case .meters:
                 distanceInMeters = distanceValue
+                print("   - Конвертую метри: \(distanceValue) м")
             case .kilometers:
                 distanceInMeters = distanceValue * 1000
+                print("   - Конвертую кілометри: \(distanceValue) км = \(distanceValue * 1000) м")
             }
         } else {
             distanceInMeters = nil
+            print("   - Дистанція порожня, встановлюю nil")
         }
         
         let updatedWorkout = Day(
@@ -461,6 +485,12 @@ struct EditWorkoutView: View {
             calories: Int(calories),
             supplements: workout.supplements
         )
+        
+        print("💾 EditWorkoutView: Створено оновлене тренування:")
+        print("   - ID: \(updatedWorkout.id)")
+        print("   - Distance: \(updatedWorkout.distance ?? 0) м")
+        print("   - Викликаю onSave...")
+        
         onSave(updatedWorkout)
     }
 }
@@ -505,17 +535,38 @@ struct CustomBackButton: View {
 // MARK: - Helper Functions
 
 private func formatDistance(_ workout: Day) -> String {
-    // Приблизний розрахунок дистанції на основі кроків (тільки для спорту з кроками)
-    if let steps = workout.steps, workout.sportType.hasSteps {
-        let distance = Double(steps) * 0.0008 // Приблизно 0.8м на крок
+    // Спочатку перевіряємо збережену дистанцію
+    if let distance = workout.distance, distance > 0 {
         if distance >= 1000 {
-            return String(format: "%.2f км", distance / 1000)
+            let km = distance / 1000
+            // Видаляємо зайві нулі після коми
+            if km.truncatingRemainder(dividingBy: 1) == 0 {
+                return String(format: "%.0f км", km)
+            } else {
+                return String(format: "%.1f км", km)
+            }
         } else {
             return String(format: "%.0f м", distance)
         }
-    } else {
-        return "—"
     }
+    
+    // Якщо немає збереженої дистанції, використовуємо приблизний розрахунок на основі кроків
+    if let steps = workout.steps, workout.sportType.hasSteps {
+        let distance = Double(steps) * 0.0008 // Приблизно 0.8м на крок
+        if distance >= 1000 {
+            let km = distance / 1000
+            // Видаляємо зайві нулі після коми
+            if km.truncatingRemainder(dividingBy: 1) == 0 {
+                return String(format: "%.0f км", km)
+            } else {
+                return String(format: "%.1f км", km)
+            }
+        } else {
+            return String(format: "%.0f м", distance)
+        }
+    }
+    
+    return "—"
 }
 
 private func formatStartTime(_ workout: Day) -> String {

@@ -107,7 +107,7 @@ struct AppView: View {
             }
             .sheet(item: viewStore.binding(
                 get: { 
-                    print("🔄 AppView: Перевіряю workoutDetail: \($0.workoutDetail?.id.uuidString ?? "nil")")
+                    //print("🔄 AppView: Перевіряю workoutDetail: \($0.workoutDetail?.id.uuidString ?? "nil")")
                     return $0.workoutDetail 
                 },
                 send: { _ in 
@@ -115,14 +115,13 @@ struct AppView: View {
                     return .workoutDetail(.hideActiveWorkout) 
                 }
             )) { _ in
-                if let workoutDetail = viewStore.workoutDetail {
-                    WorkoutDetailView(
-                        store: Store(
-                            initialState: workoutDetail
-                        ) {
-                            WorkoutDetailFeature()
-                        }
+                IfLetStore(
+                    self.store.scope(
+                        state: \.workoutDetail,
+                        action: { .workoutDetail($0) }
                     )
+                ) { detailStore in
+                    WorkoutDetailView(store: detailStore)
                 }
             }
         }

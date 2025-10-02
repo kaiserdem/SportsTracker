@@ -41,6 +41,7 @@ struct HomeFeature: Reducer {
                 return .send(.loadRecentActivities)
                 
             case .loadRecentActivities:
+                print("🔄 HomeFeature: Завантажую останні активності...")
                 state.isLoading = true
                 return CoreDataEffects.fetchDays()
                     .map(Action.daysLoaded)
@@ -55,6 +56,7 @@ struct HomeFeature: Reducer {
                     print("      Comment: \(day.comment ?? "nil")")
                     print("      Steps: \(day.steps ?? 0)")
                     print("      Calories: \(day.calories ?? 0)")
+                    print("      Distance: \(day.distance ?? 0) м")
                 }
                 state.recentDays = days
                 state.isLoading = false

@@ -65,7 +65,13 @@ struct Day: Identifiable, Codable, Equatable {
     var formattedDistance: String {
         guard let distance = distance else { return "—" }
         if distance >= 1000 {
-            return String(format: "%.2f км", distance / 1000)
+            let km = distance / 1000
+            // Видаляємо зайві нулі після коми
+            if km.truncatingRemainder(dividingBy: 1) == 0 {
+                return String(format: "%.0f км", km)
+            } else {
+                return String(format: "%.1f км", km)
+            }
         } else {
             return String(format: "%.0f м", distance)
         }
