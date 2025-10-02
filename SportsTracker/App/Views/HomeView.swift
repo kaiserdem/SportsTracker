@@ -219,7 +219,7 @@ struct ActiveWorkoutBanner: View {
                     
                     HStack {
                         Text(workout.formattedDuration)
-                            .font(.system(size: 18, weight: .bold, design: .monospaced))
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
                             .foregroundColor(.white)
                         
                         Spacer()
@@ -380,6 +380,26 @@ struct MonthlyStatsView: View {
         }
     }
     
+    private var daysCount: Int {
+        let totalSeconds = Int(monthlyDuration.rounded())
+        return totalSeconds / (24 * 3600) // 24 години = 1 день
+    }
+    
+    private var hoursCount: Int {
+        let totalSeconds = Int(monthlyDuration.rounded())
+        return (totalSeconds % (24 * 3600)) / 3600 // Залишок годин після днів
+    }
+    
+    private var minutesCount: Int {
+        let totalSeconds = Int(monthlyDuration.rounded())
+        return (totalSeconds % 3600) / 60
+    }
+    
+    private var secondsCount: Int {
+        let totalSeconds = Int(monthlyDuration.rounded())
+        return totalSeconds % 60
+    }
+    
     private var formattedDistance: String {
         let distance = monthlyDistance
         print("📊 MonthlyStatsView: Форматую дистанцію: \(distance) м")
@@ -405,38 +425,75 @@ struct MonthlyStatsView: View {
     
     var body: some View {
         let _ = print("🔄 MonthlyStatsView: Перерендерується body")
-        VStack(spacing: Theme.Spacing.sm) {
+        VStack(spacing: Theme.Spacing.md) {
+            // 1. Назва
             Text("В цьому місяці")
                 .font(Theme.Typography.body)
                 .foregroundColor(Theme.Palette.textSecondary)
             
-            // Тривалість
-            VStack(spacing: 4) {
-                Text(formattedDuration)
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
-                    .foregroundColor(Theme.Palette.primary)
-                    .minimumScaleFactor(0.5)
-                    .lineLimit(1)
-                    .frame(maxWidth: .infinity)
+            // 2. Горизонтальний стек з елементами
+            HStack(spacing: Theme.Spacing.sm) {
+                // Дні (показуємо тільки якщо є)
+                if daysCount > 0 {
+                    VStack(spacing: 4) {
+                        Text("\(daysCount)")
+                            .font(.system(size: 34, weight: .bold, design: .rounded))
+                            .foregroundColor(Theme.Palette.primary)
+                        Text("days")
+                            .font(Theme.Typography.caption)
+                            .foregroundColor(Theme.Palette.textSecondary)
+                    }
+                }
                 
-                Text("Тривалість")
-                    .font(Theme.Typography.caption)
-                    .foregroundColor(Theme.Palette.textSecondary)
+                // Години
+                VStack(spacing: 4) {
+                    Text("\(hoursCount)")
+                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                        .foregroundColor(Theme.Palette.primary)
+                    Text("hrs")
+                        .font(Theme.Typography.caption)
+                        .foregroundColor(Theme.Palette.textSecondary)
+                }
+                
+                // Хвилини
+                VStack(spacing: 4) {
+                    Text("\(minutesCount)")
+                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                        .foregroundColor(Theme.Palette.primary)
+                    Text("min")
+                        .font(Theme.Typography.caption)
+                        .foregroundColor(Theme.Palette.textSecondary)
+                }
+                
+                
+                
+                // Секунди
+                VStack(spacing: 4) {
+                    Text("\(secondsCount)")
+                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                        .foregroundColor(Theme.Palette.primary)
+                    Text("sec")
+                        .font(Theme.Typography.caption)
+                        .foregroundColor(Theme.Palette.textSecondary)
+                }
             }
             
-            // Дистанція
-            VStack(spacing: 4) {
-                Text(formattedDistance)
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
-                    .foregroundColor(Theme.Palette.secondary)
-                    .minimumScaleFactor(0.5)
-                    .lineLimit(1)
-                    .frame(maxWidth: .infinity)
-                
-                Text("Дистанція")
-                    .font(Theme.Typography.caption)
-                    .foregroundColor(Theme.Palette.textSecondary)
-            }
+            // 3. Назва "Тривалість"
+            Text("Тривалість")
+                .font(Theme.Typography.headline)
+                .foregroundColor(Theme.Palette.text)
+            
+            // 4. Дистанція
+            Text(formattedDistance)
+                .font(.system(size: 28, weight: .bold, design: .rounded))
+                .foregroundColor(Theme.Palette.secondary)
+                .minimumScaleFactor(0.5)
+                .lineLimit(1)
+            
+            // 5. Назва "Дистанція"
+            Text("Дистанція")
+                .font(Theme.Typography.headline)
+                .foregroundColor(Theme.Palette.text)
         }
         .frame(maxWidth: .infinity, minHeight: 200)
         .padding(.vertical, Theme.Spacing.lg)
@@ -513,7 +570,7 @@ struct MonthlyCalendarView: View {
                     }
                 }) {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 14, weight: .medium))
+                        .font(.system(size: 14, weight: .medium, design: .rounded))
                         .foregroundColor(Theme.Palette.primary)
                         .frame(width: 28, height: 28)
                         .background(
@@ -545,7 +602,7 @@ struct MonthlyCalendarView: View {
                     }
                 }) {
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 14, weight: .medium))
+                        .font(.system(size: 14, weight: .medium, design: .rounded))
                         .foregroundColor(Theme.Palette.primary)
                         .frame(width: 28, height: 28)
                         .background(
@@ -559,7 +616,7 @@ struct MonthlyCalendarView: View {
             HStack(spacing: 2) {
                 ForEach(["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"], id: \.self) { day in
                     Text(day)
-                        .font(.system(size: 10, weight: .medium))
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
                         .foregroundColor(Theme.Palette.textSecondary)
                         .frame(maxWidth: .infinity)
                 }
@@ -598,7 +655,7 @@ struct MonthlyCalendarView: View {
                     }
                     
                     Text("\(day)")
-                        .font(.system(size: 12, weight: .medium))
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
                         .foregroundColor((isToday || hasWorkout) ? .white : Theme.Palette.text)
                         .frame(width: 19, height: 19)
                         .background(
