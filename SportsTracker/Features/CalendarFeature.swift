@@ -3,10 +3,16 @@ import Foundation
 import CoreData
 
 struct CalendarFeature: Reducer {
+    enum EventFilter: String, CaseIterable {
+        case future = "Future"
+        case past = "Past"
+    }
+    
     struct State: Equatable {
         var selectedDate = Date()
         var events: [Day] = []
         var isLoading = false
+        var selectedEventFilter: EventFilter = .future
     }
     
     enum Action: Equatable {
@@ -19,6 +25,7 @@ struct CalendarFeature: Reducer {
         case updateDay(Day)
         case coreDataError(CoreDataError)
         case showAddActivity
+        case selectEventFilter(EventFilter)
     }
     
     var body: some Reducer<State, Action> {
@@ -87,6 +94,10 @@ struct CalendarFeature: Reducer {
                 
             case .showAddActivity:
                 print("📊 CalendarFeature: Показати екран додавання активності")
+                return .none
+                
+            case let .selectEventFilter(filter):
+                state.selectedEventFilter = filter
                 return .none
             }
         }
