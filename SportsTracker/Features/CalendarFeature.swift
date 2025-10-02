@@ -18,6 +18,7 @@ struct CalendarFeature: Reducer {
         case deleteDay(Day)
         case updateDay(Day)
         case coreDataError(CoreDataError)
+        case showAddActivity
     }
     
     var body: some Reducer<State, Action> {
@@ -83,9 +84,13 @@ struct CalendarFeature: Reducer {
                 state.isLoading = false
                 print("Core Data Error: \(error)")
                 return .none
+                
+            case .showAddActivity:
+                print("📊 CalendarFeature: Показати екран додавання активності")
+                return .none
             }
         }
     }
 }
 
-// Використовуємо модель Day замість CalendarEvent
+// Using Day model instead of CalendarEvent

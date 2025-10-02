@@ -24,7 +24,7 @@ enum SportType: String, CaseIterable, Identifiable, Codable {
     
     var id: String { rawValue }
     
-    // Визначає чи спорт має дистанцію
+    // Determines if sport has distance
     var hasDistance: Bool {
         switch self {
         case .running, .cycling, .swimming, .walking, .hiking, .skiing, .snowboarding:
@@ -34,7 +34,7 @@ enum SportType: String, CaseIterable, Identifiable, Codable {
         }
     }
     
-    // Визначає чи спорт має кроки
+    // Determines if sport has steps
     var hasSteps: Bool {
         switch self {
         case .running, .walking, .hiking:
@@ -163,26 +163,26 @@ enum SportType: String, CaseIterable, Identifiable, Codable {
 // MARK: - Extensions
 
 extension SportType {
-    // Види спорту з дистанцією для тренувань
+    // Sports with distance for workouts
     static var distanceSports: [SportType] {
         return SportType.allCases.filter { $0.hasDistance }
     }
     
-    // Популярні види спорту з дистанцією
+    // Popular sports with distance
     static var popularDistanceSports: [SportType] {
         return [.running, .walking, .cycling, .swimming, .hiking]
     }
 }
 
 enum SportCategory: String, CaseIterable {
-    case cardio = "Кардіо"
-    case strength = "Силові"
-    case water = "Водні"
-    case flexibility = "Гнучкість"
-    case combat = "Бойові"
-    case team = "Командні"
-    case winter = "Зимові"
-    case outdoor = "На відкритому повітрі"
-    case dance = "Танці"
-    case other = "Інше"
+    case cardio = "Cardio"
+    case strength = "Strength"
+    case water = "Water"
+    case flexibility = "Flexibility"
+    case combat = "Combat"
+    case team = "Team"
+    case winter = "Winter"
+    case outdoor = "Outdoor"
+    case dance = "Dance"
+    case other = "Other"
 }

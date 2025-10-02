@@ -50,6 +50,10 @@ struct AppFeature: Reducer {
             case .home:
                 return .none
                 
+            case .calendar(.showAddActivity):
+                print("📥 AppFeature: Отримав showAddActivity з CalendarFeature")
+                return .send(.home(.showAddActivity))
+                
             case .calendar:
                 return .none
                     

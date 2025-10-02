@@ -137,7 +137,7 @@ struct Supplement: Identifiable, Codable, Equatable {
             return "capsule.fill"
         case let name where name.contains("vitamin"):
             return "pills"
-        case let name where name.contains("омега"):
+        case let name where name.contains("omega"):
             return "fish.fill"
         default:
             return "pills"

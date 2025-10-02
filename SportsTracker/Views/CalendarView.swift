@@ -10,7 +10,8 @@ struct CalendarView: View {
                 VStack(spacing: Theme.Spacing.lg) {
                     // Add Workout Button
                     Button(action: {
-                        // Action to add workout
+                        print("🔘 CalendarView: Натиснуто 'Add Workout' кнопку")
+                        viewStore.send(.showAddActivity)
                     }) {
                         HStack(spacing: 16) {
                             Image(systemName: "plus.circle.fill")
@@ -21,7 +22,7 @@ struct CalendarView: View {
                         }
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 20)
+                        .padding(.vertical, 16)
                         .background(
                             LinearGradient(
                                 colors: [
