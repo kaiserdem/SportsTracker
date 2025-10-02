@@ -32,7 +32,7 @@ struct HomeView: View {
                         // Швидкі дії
                         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
                             Text("Швидкі дії")
-                                .font(Theme.Typography.headline)
+                                .font(.system(size: 17, weight: .semibold, design: .rounded))
                                 .foregroundColor(Theme.Palette.text)
                             
                             LazyVGrid(columns: [
@@ -73,7 +73,7 @@ struct HomeView: View {
                         // Останні активності
                         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
                             Text("Останні активності")
-                                .font(Theme.Typography.headline)
+                                .font(.system(size: 17, weight: .semibold, design: .rounded))
                                 .foregroundColor(Theme.Palette.text)
                             
                             if viewStore.isLoading {
@@ -82,7 +82,7 @@ struct HomeView: View {
                                     .padding()
                             } else if viewStore.recentDays.isEmpty {
                                 Text("Поки що немає активностей")
-                                    .font(Theme.Typography.body)
+                                    .font(.system(size: 16, weight: .regular, design: .rounded))
                                     .foregroundColor(Theme.Palette.textSecondary)
                                     .frame(maxWidth: .infinity)
                                     .padding()
@@ -160,11 +160,11 @@ struct QuickActionCard: View {
         Button(action: action ?? {}) {
             VStack(spacing: Theme.Spacing.sm) {
                 Image(systemName: icon)
-                    .font(.title2)
+                    .font(.system(size: 20, weight: .medium, design: .rounded))
                     .foregroundColor(color)
                 
                 Text(title)
-                    .font(Theme.Typography.caption)
+                    .font(.system(size: 12, weight: .medium, design: .rounded))
                     .foregroundColor(Theme.Palette.text)
                     .multilineTextAlignment(.center)
             }
@@ -188,7 +188,7 @@ struct ActiveWorkoutBanner: View {
             HStack(spacing: Theme.Spacing.md) {
                 // Іконка тренування
                 Image(systemName: workout.sportType.icon)
-                    .font(.title2)
+                    .font(.system(size: 20, weight: .medium, design: .rounded))
                     .foregroundColor(.white)
                     .frame(width: 40, height: 40)
                     .background(Theme.Palette.primary)
@@ -198,7 +198,7 @@ struct ActiveWorkoutBanner: View {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack {
                         Text(workout.sportType.rawValue)
-                            .font(Theme.Typography.headline)
+                            .font(.system(size: 17, weight: .semibold, design: .rounded))
                             .foregroundColor(.white)
                         
                         Spacer()
@@ -212,7 +212,7 @@ struct ActiveWorkoutBanner: View {
                                 .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: workout.formattedDuration)
                             
                             Text(workout.isPaused ? "Пауза" : "Активне")
-                                .font(Theme.Typography.caption)
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
                                 .foregroundColor(.white.opacity(0.9))
                         }
                     }
@@ -226,7 +226,7 @@ struct ActiveWorkoutBanner: View {
                         
                         if workout.totalDistance > 0 {
                             Text(workout.formattedDistance)
-                                .font(Theme.Typography.caption)
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
                                 .foregroundColor(.white.opacity(0.8))
                         }
                     }
@@ -234,7 +234,7 @@ struct ActiveWorkoutBanner: View {
                 
                 // Стрілка
                 Image(systemName: "chevron.right")
-                    .font(.caption)
+                    .font(.system(size: 12, weight: .medium, design: .rounded))
                     .foregroundColor(.white.opacity(0.7))
             }
             .padding(Theme.Spacing.md)
@@ -261,17 +261,17 @@ struct DayRow: View {
         VStack(spacing: Theme.Spacing.sm) {
             HStack(spacing: Theme.Spacing.md) {
                 Image(systemName: day.sportType.icon)
-                    .font(.title3)
+                    .font(.system(size: 16, weight: .medium, design: .rounded))
                     .foregroundColor(Theme.Palette.primary)
                     .frame(width: 30)
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(day.sportType.rawValue)
-                        .font(Theme.Typography.body)
+                        .font(.system(size: 16, weight: .regular, design: .rounded))
                         .foregroundColor(Theme.Palette.text)
                     
                     Text(day.formattedDate)
-                        .font(Theme.Typography.caption)
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
                         .foregroundColor(Theme.Palette.textSecondary)
                 }
                 
@@ -279,12 +279,12 @@ struct DayRow: View {
                 
                 VStack(alignment: .trailing, spacing: 2) {
                     Text(day.formattedDuration)
-                        .font(Theme.Typography.body)
+                        .font(.system(size: 16, weight: .regular, design: .rounded))
                         .foregroundColor(Theme.Palette.text)
                     
                     if let calories = day.calories {
                         Text("\(calories) ккал")
-                            .font(Theme.Typography.caption)
+                            .font(.system(size: 12, weight: .medium, design: .rounded))
                             .foregroundColor(Theme.Palette.textSecondary)
                     }
                 }
@@ -292,7 +292,7 @@ struct DayRow: View {
             
             if let comment = day.comment, !comment.isEmpty {
                 Text(comment)
-                    .font(Theme.Typography.caption)
+                    .font(.system(size: 12, weight: .medium, design: .rounded))
                     .foregroundColor(Theme.Palette.textSecondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -300,11 +300,11 @@ struct DayRow: View {
             if day.hasSupplements {
                 HStack {
                     Image(systemName: "pills.fill")
-                        .font(.caption)
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
                         .foregroundColor(Theme.Palette.accent)
                     
                     Text("\(day.supplementsCount) додатків")
-                        .font(Theme.Typography.caption)
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
                         .foregroundColor(Theme.Palette.accent)
                     
                     Spacer()
@@ -428,7 +428,7 @@ struct MonthlyStatsView: View {
         VStack(spacing: Theme.Spacing.md) {
             // 1. Назва
             Text("В цьому місяці")
-                .font(Theme.Typography.body)
+                .font(.system(size: 16, weight: .regular, design: .rounded))
                 .foregroundColor(Theme.Palette.textSecondary)
             
             // 2. Горизонтальний стек з елементами
@@ -440,7 +440,7 @@ struct MonthlyStatsView: View {
                             .font(.system(size: 34, weight: .bold, design: .rounded))
                             .foregroundColor(Theme.Palette.primary)
                         Text("days")
-                            .font(Theme.Typography.caption)
+                            .font(.system(size: 12, weight: .medium, design: .rounded))
                             .foregroundColor(Theme.Palette.textSecondary)
                     }
                 }
@@ -451,7 +451,7 @@ struct MonthlyStatsView: View {
                         .font(.system(size: 34, weight: .bold, design: .rounded))
                         .foregroundColor(Theme.Palette.primary)
                     Text("hrs")
-                        .font(Theme.Typography.caption)
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
                         .foregroundColor(Theme.Palette.textSecondary)
                 }
                 
@@ -461,7 +461,7 @@ struct MonthlyStatsView: View {
                         .font(.system(size: 34, weight: .bold, design: .rounded))
                         .foregroundColor(Theme.Palette.primary)
                     Text("min")
-                        .font(Theme.Typography.caption)
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
                         .foregroundColor(Theme.Palette.textSecondary)
                 }
                 
@@ -473,14 +473,14 @@ struct MonthlyStatsView: View {
                         .font(.system(size: 34, weight: .bold, design: .rounded))
                         .foregroundColor(Theme.Palette.primary)
                     Text("sec")
-                        .font(Theme.Typography.caption)
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
                         .foregroundColor(Theme.Palette.textSecondary)
                 }
             }
             
             // 3. Назва "Тривалість"
             Text("Тривалість")
-                .font(Theme.Typography.headline)
+                .font(.system(size: 17, weight: .semibold, design: .rounded))
                 .foregroundColor(Theme.Palette.text)
             
             // 4. Дистанція
@@ -492,7 +492,7 @@ struct MonthlyStatsView: View {
             
             // 5. Назва "Дистанція"
             Text("Дистанція")
-                .font(Theme.Typography.headline)
+                .font(.system(size: 17, weight: .semibold, design: .rounded))
                 .foregroundColor(Theme.Palette.text)
         }
         .frame(maxWidth: .infinity, minHeight: 200)
@@ -584,12 +584,12 @@ struct MonthlyCalendarView: View {
                 // Назва місяця та року
                 HStack(spacing: 3) {
                     Text("\(currentMonth)")
-                        .font(Theme.Typography.caption)
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
                         .foregroundColor(Theme.Palette.text)
                         .fontWeight(.medium)
                     
                     Text("\(currentYear)")
-                        .font(Theme.Typography.caption)
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
                         .foregroundColor(Theme.Palette.textSecondary)
                 }
                 
