@@ -11,9 +11,6 @@ struct StatisticView: View {
                     VStack(spacing: Theme.Spacing.lg) {
                         // Period selector
                         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                            Text("Period")
-                                .font(Theme.Typography.headline)
-                                .foregroundColor(Theme.Palette.text)
                             
                             Picker("Period", selection: viewStore.binding(
                                 get: \.selectedPeriod,
@@ -75,7 +72,7 @@ struct StatisticView: View {
                                     
                                     StatisticCard(
                                         title: "Distance",
-                                        value: String(format: "%.1f", totalDistance(viewStore.statistics)),
+                                        value: String(format: "%.1f", totalDistance(viewStore.statistics) / 1000),
                                         subtitle: "km",
                                         icon: "location",
                                         color: Theme.Palette.secondary
@@ -200,7 +197,7 @@ struct StatisticDetailRow: View {
                 
                 StatisticItem(
                     title: "Distance",
-                    value: String(format: "%.1f km", statistic.totalDistance)
+                    value: String(format: "%.1f km", statistic.totalDistance / 1000)
                 )
                 
                 StatisticItem(
@@ -265,3 +262,4 @@ private func totalDistance(_ statistics: [StatisticData]) -> Double {
 private func totalCalories(_ statistics: [StatisticData]) -> Int {
     return statistics.reduce(0) { $0 + $1.calories }
 }
+

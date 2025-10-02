@@ -93,11 +93,25 @@ struct HomeView: View {
                                     .frame(maxWidth: .infinity)
                                     .padding()
                             } else if viewStore.recentDays.isEmpty {
-                                Text("No activities yet")
-                                    .font(.system(size: 16, weight: .regular, design: .rounded))
-                                    .foregroundColor(Theme.Palette.textSecondary)
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
+                                VStack(spacing: Theme.Spacing.md) {
+                                    Text("No activities yet")
+                                        .font(.system(size: 16, weight: .regular, design: .rounded))
+                                        .foregroundColor(Theme.Palette.textSecondary)
+                                        .frame(maxWidth: .infinity)
+                                        .padding()
+                                    
+                                    Button(action: {
+                                        print("🔘 HomeView: Натиснуто 'Add Workout' кнопку")
+                                        viewStore.send(.showAddActivity)
+                                    }) {
+                                        Text("Add Workout")
+                                            .font(.system(size: 16, weight: .medium, design: .rounded))
+                                    }
+                                    
+                                    .buttonStyle(.borderedProminent)
+                                    .tint(Theme.Palette.primary)
+                                    .controlSize(.small)
+                                }
                             } else {
                                 ForEach(viewStore.recentDays) { day in
                                     DayRow(day: day) {
@@ -492,20 +506,13 @@ struct MonthlyStatsView: View {
                     .offset(y: -12)
                 
                 // Секунди
-                if secondsCount > 0 {
-                    VStack(spacing: 4) {
-                        Text("\(secondsCount)")
-                            .font(.system(size: 44, weight: .bold, design: .rounded))
-                            .foregroundColor(Theme.Palette.primary)
-                        Text("sec")
-                            .font(.system(size: 12, weight: .medium, design: .rounded))
-                            .foregroundColor(Theme.Palette.textSecondary)
-                    }
-                } else {
-                    Text(":")
-                        .font(.system(size: 32, weight: .bold, design: .rounded))
+                VStack(spacing: 4) {
+                    Text("\(secondsCount)")
+                        .font(.system(size: 44, weight: .bold, design: .rounded))
                         .foregroundColor(Theme.Palette.primary)
-                        .offset(y: -12)
+                    Text("sec")
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .foregroundColor(Theme.Palette.textSecondary)
                 }
             }
             .minimumScaleFactor(0.5)
