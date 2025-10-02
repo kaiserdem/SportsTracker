@@ -24,6 +24,7 @@ struct HomeFeature: Reducer {
         case workout(WorkoutFeature.Action)
         case showWorkoutDetail(UUID)
         case showAddActivity
+        case showStatistics
         case addActivity(AddActivityFeature.Action)
         case dismissAddActivity
     }
@@ -128,6 +129,10 @@ struct HomeFeature: Reducer {
                 
             case .showAddActivity:
                 state.isShowingAddActivity = true
+                return .none
+                
+            case .showStatistics:
+                print("📤 HomeFeature: Показую статистику")
                 return .none
                 
             case .addActivity(.dismiss), .dismissAddActivity:

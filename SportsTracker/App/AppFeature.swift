@@ -47,6 +47,11 @@ struct AppFeature: Reducer {
                 }
                 return .none
                 
+            case .home(.showStatistics):
+                print("📥 AppFeature: Отримав showStatistics з HomeFeature, переключаю на вкладку статистики")
+                state.selectedTab = .statistic
+                return .none
+                
             case .home:
                 return .none
                 

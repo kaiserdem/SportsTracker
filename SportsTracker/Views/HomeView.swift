@@ -69,7 +69,9 @@ struct HomeView: View {
                                     title: "View Statistics",
                                     icon: "chart.bar.fill",
                                     color: Theme.Palette.coral
-                                )
+                                ) {
+                                    viewStore.send(.showStatistics)
+                                }
                                 
                                 QuickActionCard(
                                     title: "Routes",
