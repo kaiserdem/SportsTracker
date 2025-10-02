@@ -85,7 +85,6 @@ struct MapFeature {
                 return .none
                 
             case .goToHomeScreen:
-                // Цей action буде оброблятися в AppFeature, тут просто повертаємо none
                 return .none
                 
             case .updateWorkoutState(let isActive):
