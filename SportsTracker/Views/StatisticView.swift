@@ -278,9 +278,21 @@ struct StatisticDetailRow: View {
     }
     
     private func formatDuration(_ duration: TimeInterval) -> String {
+        print("📊 formatDuration: duration = \(duration) секунд")
+        
         let hours = Int(duration) / 3600
         let minutes = Int(duration) % 3600 / 60
-        return String(format: "%d:%02d", hours, minutes)
+        let seconds = Int(duration) % 60
+        
+        print("📊 formatDuration: hours=\(hours), minutes=\(minutes), seconds=\(seconds)")
+        
+        if hours > 0 {
+            return String(format: "%d:%02d:%02d", hours, minutes, seconds)
+        } else if minutes > 0 {
+            return String(format: "%d:%02d", minutes, seconds)
+        } else {
+            return String(format: "0:%02d", seconds)
+        }
     }
 }
 
@@ -306,9 +318,21 @@ struct StatisticItem: View {
 
 private func formatTotalDuration(_ statistics: [StatisticData]) -> String {
     let totalDuration = statistics.reduce(0) { $0 + $1.totalDuration }
+    print("📊 formatTotalDuration: totalDuration = \(totalDuration) секунд")
+    
     let hours = Int(totalDuration) / 3600
     let minutes = Int(totalDuration) % 3600 / 60
-    return String(format: "%d:%02d", hours, minutes)
+    let seconds = Int(totalDuration) % 60
+    
+    print("📊 formatTotalDuration: hours=\(hours), minutes=\(minutes), seconds=\(seconds)")
+    
+    if hours > 0 {
+        return String(format: "%d:%02d:%02d", hours, minutes, seconds)
+    } else if minutes > 0 {
+        return String(format: "%d:%02d", minutes, seconds)
+    } else {
+        return String(format: "0:%02d", seconds)
+    }
 }
 
 private func totalDistance(_ statistics: [StatisticData]) -> Double {
